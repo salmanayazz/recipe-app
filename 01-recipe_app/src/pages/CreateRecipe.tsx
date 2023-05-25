@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAppDispatch } from '../app/hooks';
 
 import TextInput from '../components/TextInput';
 import DynamicInputCount, { TextValue } from '../components/DynamicInputCount';
@@ -11,7 +12,9 @@ import {
 } from '../features/recipes/recipesSlice';
 
 
+
 export default function CreateRecipe() {
+    const dispatch = useAppDispatch();
 
     const [name, setName] = useState<string>('');
     const [ingredients, setIngredients] = useState<TextValue[]>([new TextValue("")]);
@@ -24,7 +27,7 @@ export default function CreateRecipe() {
         let directionValues: string[] = directions.map((direction) => direction.value);
 
         let recipe = new Recipe(name, ingredientValues, directionValues);
-        addRecipe(recipe);
+        dispatch(addRecipe(recipe));
     }
 
     function updateIngredient(index: number, value: string) {
@@ -55,7 +58,7 @@ export default function CreateRecipe() {
         <form
             onSubmit={(e) => handleSubmit(e)} 
             className="flex flex-col bg-pri-100 text-sec-100 min-h-screen min-w-screen 
-            justify-center items-center"
+            justify-center items-center z-10"
         >
             <h1
                 className=""
@@ -92,7 +95,7 @@ export default function CreateRecipe() {
                     textValues={directions} 
                     removeAt={removeDirection/* TODO: fix */}
                     onChange={updateDirection}   
-                    increaseCount={() => { setIngredients(directions.concat([new TextValue('')])) }}
+                    increaseCount={() => { setDirections(directions.concat([new TextValue('')])) }}
                 />
             </div>
 

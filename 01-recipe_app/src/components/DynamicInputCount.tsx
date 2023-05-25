@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import uniqid from "uniqid";
 
 import Button from "./Button";
