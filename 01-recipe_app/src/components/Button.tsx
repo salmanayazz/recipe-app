@@ -1,7 +1,7 @@
 interface ButtonProps {
     text: string;
     type: "button" | "submit" | "reset" | undefined;
-    onClick: () => void;
+    onClick?: () => void;
 }
 
 export default function Button({
