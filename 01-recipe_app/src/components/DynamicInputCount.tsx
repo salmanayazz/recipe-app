@@ -1,6 +1,6 @@
 import uniqid from "uniqid";
 
-import Button from "./Button";
+import Button from "./buttons/Button";
 import TextInput from "./TextInput";
 
 interface DynamicInputCountProps {

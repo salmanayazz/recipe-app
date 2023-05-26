@@ -22,9 +22,9 @@ export default function TextInput({
             onChange={(e) => onChange(e.target.value)}
             autoFocus={autoFocus}
             autoComplete={autoComplete ? "on" : "off"}
-            className="bg-pri-200 flex-1"
             value={textValue}
-        >
-        </input>
+            className="bg-pri-200 text-sec-100"
+        />
+        
     );
 }

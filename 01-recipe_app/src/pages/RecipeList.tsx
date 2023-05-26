@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 
 import { useAppSelector } from '../app/hooks';
-import Button from '../components/Button';
+import Button from '../components/buttons/Button';
 import Recipe from '../models/Recipe';
 
 import {
