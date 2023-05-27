@@ -1,5 +1,5 @@
 interface OrderedListProps {
-    values?: string[]
+    values?: string[] | JSX.Element[]
 }
 
 export default function OrderedList({
@@ -10,9 +10,15 @@ export default function OrderedList({
         <ol>
             {values?.map((value, index) => (
                 <li
-                    key={index}
+                    key={index} 
+                    className="flex"
                 >
-                    {`${index + 1}. ${value}`}
+                    <div>
+                        {`${index + 1}.`}
+                    </div>
+                    <div>
+                        {value}
+                    </div>
                 </li>
             ))}
         </ol>

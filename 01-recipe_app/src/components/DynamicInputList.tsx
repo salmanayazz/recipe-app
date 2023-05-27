@@ -1,11 +1,13 @@
+import { useEffect, useState } from "react";
+
 import uniqid from "uniqid";
 
-import Button from "./buttons/Button";
 import TextInput from "./TextInput";
 import OrderedList from "./lists/OrderedList";
 import UnorderedList from "./lists/UnorderedList";
 import CloseButton from "./buttons/CloseButton";
 import AddButton from "./buttons/AddButton";
+
 
 interface DynamicInputListProps {
     textValues: TextValue[]
@@ -43,30 +45,60 @@ export default function DynamicInputList({
     orderedList = false
 }: DynamicInputListProps) {
 
+    const [inputs, setInputs] = useState<JSX.Element[]>([])
+
+    useEffect(() => {
+        const generateInputArray = () => {
+            const newInputs: JSX.Element[] = [];
+    
+            // Generate the JSX elements based on the parameters
+            for (let i = 0; i < textValues.length; i++) {
+                const newInput = (
+                    <div
+                        className="flex"
+                    >
+                        <TextInput
+                            onChange={(value) => onChange(i, value)}
+                            //textValue={textValue.value || ""}
+                            // autofocus if last input but not first
+                            autoFocus={i === textValues.length - 1 && i !== 0}
+                        />
+                    
+                        { i === 0 ? (
+                            null
+                        ) : (
+    
+                            <CloseButton
+                                onClick={() => removeAt(i)} 
+                            />
+                        )}
+                    </div>
+                );
+    
+                newInputs.push(newInput);
+            }
+    
+            return newInputs;
+        }
+
+        const newInputs = generateInputArray();
+        setInputs(newInputs);
+    }, [textValues, onChange, removeAt]) // TODO: change to use useCallback for onChange, removeAt
+
+    
+
     return (
         <div>
             
-            {textValues.map((textValue, index) => (
-                <div
-                    className="flex"
-                >
-                    <TextInput
-                        onChange={(value) => onChange(index, value)}
-                        //textValue={textValue.value || ""}
-                        // autofocus if last input but not first
-                        autoFocus={index === textValues.length - 1 && index !== 0}
-                    />
-                    
-                    { index === 0 ? (
-                        null
-                    ) : (
-
-                        <CloseButton
-                            onClick={() => removeAt(index)} 
-                        />
-                    )}
-                </div>
-            ))}
+            { orderedList ? (
+                <OrderedList
+                    values={inputs}
+                />
+            ) : (
+                <UnorderedList
+                    values={inputs}
+                />
+            )}
             <AddButton
                 onClick={() => increaseCount()} 
             />

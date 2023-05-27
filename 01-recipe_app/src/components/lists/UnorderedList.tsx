@@ -1,5 +1,5 @@
 interface UnorderedListProps {
-    values?: string[]
+    values?: string[] | JSX.Element[]
 }
 
 export default function UnorderedList({
@@ -11,8 +11,14 @@ export default function UnorderedList({
             {values?.map((value, index) => (
                 <li
                     key={index} 
+                    className="flex"
                 >
-                    {`• ${value}`}
+                    <div>
+                        •
+                    </div>
+                    <div>
+                        {value}
+                    </div>
                 </li>
             ))}
         </ul>
