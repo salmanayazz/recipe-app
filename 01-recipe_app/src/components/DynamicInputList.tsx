@@ -2,8 +2,12 @@ import uniqid from "uniqid";
 
 import Button from "./buttons/Button";
 import TextInput from "./TextInput";
+import OrderedList from "./lists/OrderedList";
+import UnorderedList from "./lists/UnorderedList";
+import CloseButton from "./buttons/CloseButton";
+import AddButton from "./buttons/AddButton";
 
-interface DynamicInputCountProps {
+interface DynamicInputListProps {
     textValues: TextValue[]
     removeAt: (index: number) => void
     onChange: (index: number, value: string) => void
@@ -31,20 +35,20 @@ export class TextValue {
  * Whether or not the list of inputs should be ordered
  * ordered = numbered 1, 2, 3, etc.
  */
-export default function DynamicInputCount({
+export default function DynamicInputList({
     textValues,
     removeAt,
     onChange,
     increaseCount,
     orderedList = false
-}: DynamicInputCountProps) {
-    
+}: DynamicInputListProps) {
+
     return (
         <div>
-            { textValues.map((textValue, index) => (
-                <div 
-                    key={textValue.id}
-                    className=""
+            
+            {textValues.map((textValue, index) => (
+                <div
+                    className="flex"
                 >
                     <TextInput
                         onChange={(value) => onChange(index, value)}
@@ -53,23 +57,18 @@ export default function DynamicInputCount({
                         autoFocus={index === textValues.length - 1 && index !== 0}
                     />
                     
-                    
                     { index === 0 ? (
                         null
                     ) : (
-                        <Button 
-                            text="X"
+
+                        <CloseButton
                             onClick={() => removeAt(index)} 
-                            type="button"                    
                         />
                     )}
                 </div>
             ))}
-
-            <Button 
-                text="+"
-                onClick={() => increaseCount()}
-                type="button"
+            <AddButton
+                onClick={() => increaseCount()} 
             />
         </div>
     );

@@ -13,8 +13,6 @@ const initialState: RecipeState = {
   recipes: storage.getRecipes()
 };
 
-
-
 export const recipesSlice = createSlice({
   name: 'recipes',
   initialState,

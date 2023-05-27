@@ -1,7 +1,7 @@
 import Button from "./Button";
 
 interface CloseButtonProps {
-    onClick: () => void
+    onClick?: () => void
 }
 
 export default function CloseButton({

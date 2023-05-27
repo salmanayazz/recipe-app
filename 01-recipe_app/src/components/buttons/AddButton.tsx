@@ -1,7 +1,7 @@
 import Button from "./Button";
 
 interface AddButtonProps {
-    onClick: () => void
+    onClick?: () => void
 }
 
 export default function AddButton({

@@ -14,14 +14,14 @@ export default function PopupWindow({
     return (
         <div 
             // blurred background
-            className="fixed inset-0 bg-opacity-50 backdrop-blur-sm"
+            className="fixed inset-0 bg-[#00000046] backdrop-blur-sm"
         >
-            <div 
-                className="flex flex-col bg-pri-200
-                items-center z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            <div
+                className="flex flex-col bg-pri-100 z-10 absolute top-1/2 left-1/2 transform 
+                -translate-x-1/2 -translate-y-1/2 px-8 py-5 min-w-[50%] rounded-md"
             >
                 <div 
-                    className='flex justify-end w-full absolute'
+                    className='flex absolute top-0 right-0'
                 >
                     <CloseButton 
                         onClick={() => navigate(-1)}     

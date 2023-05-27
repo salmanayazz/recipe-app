@@ -23,7 +23,7 @@ export default function TextInput({
             autoFocus={autoFocus}
             autoComplete={autoComplete ? "on" : "off"}
             value={textValue}
-            className="bg-pri-200 text-sec-100"
+            className="bg-pri-200 text-sec-100 outline-none border-2 border-pri-200 rounded-md p-1 w-full"
         />
         
     );

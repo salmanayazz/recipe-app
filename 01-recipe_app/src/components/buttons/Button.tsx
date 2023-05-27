@@ -13,7 +13,7 @@ export default function Button({
         <button 
             type={type}
             onClick={onClick}
-            className="bg-pri-100 text-sec-100"
+            className="bg-inherit text-sec-100 w-full h-full"
         >
             {text}
         </button>

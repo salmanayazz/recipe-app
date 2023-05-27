@@ -6,7 +6,7 @@ module.exports = {
       colors: {
         pri: {
           100: '#18181b',
-          200: '#27272a'
+          200: '#202023'
         },
         sec: {
           100: '#fafafa',

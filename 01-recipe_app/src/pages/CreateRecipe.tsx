@@ -3,15 +3,18 @@ import { useAppDispatch } from '../app/hooks';
 import { useNavigate } from 'react-router-dom';
 
 import TextInput from '../components/TextInput';
-import DynamicInputCount, { TextValue } from '../components/DynamicInputCount';
+import DynamicInputList, { TextValue } from '../components/DynamicInputList';
 import Button from '../components/buttons/Button';
 import PopupWindow from '../components/PopupWindow';
+import Header1 from '../components/headers/Header1';
+import Header2 from '../components/headers/Header2';
 
 import Recipe from '../models/Recipe';
 
 import {
     addRecipe
 } from '../features/recipes/recipesSlice';
+
 
 export default function CreateRecipe() {
     const dispatch = useAppDispatch();
@@ -62,25 +65,25 @@ export default function CreateRecipe() {
                 <form
                     onSubmit={(e) => handleSubmit(e)} 
                 >
-                    <h1
-                        className=""
-                    >
-                        New Recipe
-                    </h1>
+                    <Header1
+                        text='New Recipe'
+                    />
 
                     <div>
+                        <Header2
+                            text='Recipe Name'
+                        />
                         <TextInput
-                            placeholder="Recipe Name"
                             onChange={(value) => { setName(value) }}
                         />
                     </div>
 
                     <div>
-                        <h2>
-                            Ingredients
-                        </h2>
+                        <Header2
+                            text='Ingredients'
+                        />
 
-                        <DynamicInputCount
+                        <DynamicInputList
                             textValues={ingredients} 
                             removeAt={removeIngredient/* TODO: fix */}
                             onChange={updateIngredient}  
@@ -89,21 +92,22 @@ export default function CreateRecipe() {
                     </div>
 
                     <div>
-                        <h2>
-                            Directions
-                        </h2>
+                        <Header2
+                            text='Directions'
+                        />
 
-                        <DynamicInputCount
+                        <DynamicInputList
                             textValues={directions} 
                             removeAt={removeDirection/* TODO: fix */}
                             onChange={updateDirection}   
                             increaseCount={() => { setDirections(directions.concat([new TextValue('')])) }}
+                            orderedList={true}
                         />
                     </div>
 
                     <Button 
                         type='submit' 
-                        text='Save Recipe'
+                        text='Save'
                     />
                     
                 </form> 
