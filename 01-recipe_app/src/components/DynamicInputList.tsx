@@ -3,10 +3,9 @@ import { useEffect, useState } from "react";
 import uniqid from "uniqid";
 
 import TextInput from "./TextInput";
-import OrderedList from "./lists/OrderedList";
-import UnorderedList from "./lists/UnorderedList";
 import CloseButton from "./buttons/CloseButton";
 import AddButton from "./buttons/AddButton";
+import List from "./List";
 
 
 interface DynamicInputListProps {
@@ -45,6 +44,7 @@ export default function DynamicInputList({
     orderedList = false
 }: DynamicInputListProps) {
 
+    // array of JSX elements that then gets passed to list component to be rendered
     const [inputs, setInputs] = useState<JSX.Element[]>([])
 
     useEffect(() => {
@@ -55,7 +55,7 @@ export default function DynamicInputList({
             for (let i = 0; i < textValues.length; i++) {
                 const newInput = (
                     <div
-                        className="flex"
+                        className="flex w-full"
                     >
                         <TextInput
                             onChange={(value) => onChange(i, value)}
@@ -89,16 +89,10 @@ export default function DynamicInputList({
 
     return (
         <div>
-            
-            { orderedList ? (
-                <OrderedList
-                    values={inputs}
-                />
-            ) : (
-                <UnorderedList
-                    values={inputs}
-                />
-            )}
+            <List
+                values={inputs}
+                isOrdered={orderedList}
+            />
             <AddButton
                 onClick={() => increaseCount()} 
             />
