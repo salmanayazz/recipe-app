@@ -12,16 +12,14 @@ import {
 } from '../features/recipes/recipesSlice';
 
 export default function RecipeDetails() {
-    let { recipeName } = useParams();
-    console.log('the name is: ', recipeName);
+    let { recipeId } = useParams();
     const recipes = useAppSelector(selectRecipes);
-    console.table(recipes || 'no recipes');
-    const recipe = recipes.find((recipe) => recipe.name === recipeName);
+    const recipe = recipes.find((recipe) => recipe.id === recipeId);
 
     return (
         <PopupWindow
             element={
-                recipe  ? (
+                recipe ? (
                     <>
                         <Header1
                             text={recipe.name}

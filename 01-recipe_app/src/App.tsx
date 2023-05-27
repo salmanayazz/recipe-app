@@ -10,7 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<RecipeList />} >
           <Route path="create" element={<CreateRecipe />} />
-          <Route path=":recipeName" element={<RecipeDetails />} />
+          <Route path=":recipeId" element={<RecipeDetails />} />
         </Route>
       </Routes>
     </Router>

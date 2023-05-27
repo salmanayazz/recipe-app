@@ -10,6 +10,7 @@ import {
     selectRecipes
 } from '../features/recipes/recipesSlice';
 import Header1 from '../components/headers/Header1';
+import Button from '../components/buttons/Button';
 
 
 export default function RecipeList() {
@@ -32,6 +33,10 @@ export default function RecipeList() {
                     <NavLink to="create">
                         <AddButton />
                     </NavLink>
+                    <Button
+                        text='Clear All'
+                        onClick={() => {localStorage.clear()}}
+                    />
                 </div>
                 
 
@@ -40,8 +45,8 @@ export default function RecipeList() {
                 >
                     { recipes.map((recipe: Recipe) => (
                         <NavLink 
-                            key={recipe.name}
-                            to={recipe.name}
+                            key={recipe.id}
+                            to={recipe.id}
                             className='w-full bg-pri-200 rounded-md px-4 py-5'
                         >
                             <Header2
