@@ -135,11 +135,13 @@ export default function CreateRecipe() {
                                 orderedList={true}
                             />
                         </div>
-
-                        <Button 
-                            type='submit' 
-                            element='Save'
-                        />
+                        <div>
+                            <Button 
+                                type='submit' 
+                                element='Save'
+                            />
+                        </div>
+                        
                         
                     </form> 
                 }

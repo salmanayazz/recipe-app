@@ -28,6 +28,17 @@ export default function RecipeDetails() {
                         <Header1
                             text={recipe.name}
                         />
+                        <div
+                            className='text-sec-200 '
+                        >
+                            {`Last Modified: ${recipe.lastModified.toLocaleDateString(undefined, {
+                                year: "numeric", 
+                                month: "numeric", 
+                                day: "numeric",
+                                hour: "numeric",
+                                minute: "numeric"
+                            })}`}
+                        </div>
 
                         <HorizontalLine />
                         

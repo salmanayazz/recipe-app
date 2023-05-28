@@ -5,13 +5,13 @@ import { useAppSelector } from '../app/hooks';
 import AddButton from '../components/buttons/AddButton';
 import Recipe from '../models/Recipe';
 import Header2 from '../components/headers/Header2';
+import Header1 from '../components/headers/Header1';
+import HorizontalLine from '../components/HorizontalLine';
 
 import {
     selectRecipes
 } from '../features/recipes/recipesSlice';
-import Header1 from '../components/headers/Header1';
-import Button from '../components/buttons/Button';
-import HorizontalLine from '../components/HorizontalLine';
+
 
 
 export default function RecipeList() {
@@ -38,6 +38,11 @@ export default function RecipeList() {
                     >
                         <AddButton />
                     </NavLink>
+                    <button
+                        onClick={() => localStorage.clear()}
+                    >
+                        clear
+                    </button>
                 </div>
                 <HorizontalLine />
                 
