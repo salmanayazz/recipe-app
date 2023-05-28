@@ -30,13 +30,7 @@ export default function RecipeDetails() {
                         <div
                             className='text-sec-200'
                         >
-                            {`Last Modified: ${recipe.lastModified.toLocaleDateString(undefined, {
-                                year: "numeric", 
-                                month: "numeric", 
-                                day: "numeric",
-                                hour: "numeric",
-                                minute: "numeric"
-                            })}`}
+                            {`Last Modified: ${recipe.lastModified}`}
                         </div>
 
                         <HorizontalLine />

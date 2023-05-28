@@ -5,7 +5,14 @@ export default class Recipe {
     name: string;
     ingredients: string[];
     directions: string[];
-    lastModified: Date = new Date();
+    lastModified: string = new Date().toLocaleString(undefined, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+    });
 
     constructor(name: string, ingredients: string[], directions: string[]) {
         
@@ -18,7 +25,6 @@ export default class Recipe {
             throw e;
         }
         
-
         this.name = name;
         this.ingredients = ingredients;
         this.directions = directions;
