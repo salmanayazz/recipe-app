@@ -33,8 +33,8 @@ export default function CreateRecipe() {
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        let ingredientValues: string[] = ingredients.map((ingredient) => ingredient.value);
-        let directionValues: string[] = directions.map((direction) => direction.value);
+        let ingredientValues: string[] = removeEmpty(ingredients.map((ingredient) => ingredient.value));
+        let directionValues: string[] = removeEmpty(directions.map((direction) => direction.value));
 
         let recipe;
         try {
@@ -51,6 +51,16 @@ export default function CreateRecipe() {
         
         dispatch(addRecipe(recipe));
         navigate(-1);
+    }
+
+    function removeEmpty(array: string[]): string[] {
+        let arrayCopy: string[] = [];
+        array.forEach((value) => {
+            if (value.length > 0) {
+                arrayCopy.push(value);
+            }
+        })
+        return arrayCopy;
     }
 
     function updateIngredient(index: number, value: string) {

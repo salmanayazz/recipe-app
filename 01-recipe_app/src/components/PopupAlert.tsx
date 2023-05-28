@@ -25,7 +25,8 @@ export default function PopupAlert({
         <>
             {isVisible ? (
                 <div
-                    className="bg-pri-200 absolute bottom-1 right-1 px-20 py-10 mb-5 rounded-s-md"
+                    className={`absolute bottom-1 right-1 px-20 py-10 mb-5 rounded-s-md
+                    bg-error`}
                 >
                     <Header2
                         text={element}

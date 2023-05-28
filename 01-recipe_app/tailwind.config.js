@@ -12,8 +12,9 @@ module.exports = {
           100: '#fafafa',
           200: '#d4d4d8'
         },
+        error: '#46181b',
+        success: '#18461b',
       },
-      fontSize: '1.5rem'
     },
   },
   plugins: [],
