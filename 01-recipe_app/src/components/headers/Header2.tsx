@@ -9,7 +9,7 @@ export default function Header2 ({
 
     return (
         <h2
-            className="text-sec-200 text-2xl font-bold h-fit w-fit"
+            className="text-sec-100 text-2xl font-bold h-fit w-fit my-2"
         >
             {text}
         </h2>

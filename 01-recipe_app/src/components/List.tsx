@@ -12,12 +12,16 @@ export default function List({
         return values.map((value: string | JSX.Element, index: number) => (
             <li
                 key={index} 
-                className="flex"
+                className="flex gap-2 w-full ml-2"
             >
+                
                 <div>
-                    {isOrdered ? (`${index + 1}.`) : (`•`)}
+                    {isOrdered ? (`${index + 1}.`) : ('●')}
                 </div>
-                <div>
+
+                <div
+                    className="flex items-center w-full"
+                >
                     {value}
                 </div>
             </li>
@@ -27,11 +31,15 @@ export default function List({
     return (
         <>
             {isOrdered ? (
-                <ol>
+                <ol
+                    className="flex flex-col gap-2"
+                >
                     {renderValues()}
                 </ol>
             ) : (
-                <ul>
+                <ul
+                className="flex flex-col gap-2"
+                >
                     {renderValues()}
                 </ul>
             )}

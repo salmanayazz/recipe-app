@@ -5,6 +5,7 @@ export default class Recipe {
     name: string;
     ingredients: string[];
     directions: string[];
+    lastModified: Date = new Date();
 
     constructor(name: string, ingredients: string[], directions: string[]) {
         

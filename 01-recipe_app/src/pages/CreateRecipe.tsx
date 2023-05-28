@@ -8,6 +8,9 @@ import Button from '../components/buttons/Button';
 import PopupWindow from '../components/PopupWindow';
 import Header1 from '../components/headers/Header1';
 import Header2 from '../components/headers/Header2';
+import HorizontalLine from '../components/HorizontalLine';
+
+import PopupAlert from '../components/PopupAlert';
 
 import Recipe from '../models/Recipe';
 
@@ -24,13 +27,29 @@ export default function CreateRecipe() {
     const [ingredients, setIngredients] = useState<TextValue[]>([new TextValue("")]);
     const [directions, setDirections] = useState<TextValue[]>([new TextValue("")]);
 
+    const [error, setError] = useState<any>();
+
+
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
         let ingredientValues: string[] = ingredients.map((ingredient) => ingredient.value);
         let directionValues: string[] = directions.map((direction) => direction.value);
 
-        let recipe = new Recipe(name, ingredientValues, directionValues);
+        let recipe;
+        try {
+            recipe = new Recipe(name, ingredientValues, directionValues);
+        } 
+        catch(e) {
+            if (typeof e === 'string') {
+                setError(e);
+            } else {
+                setError('An error occured')
+            }
+            
+            return;
+        } 
+        
         dispatch(addRecipe(recipe));
         navigate(-1);
     }
@@ -60,58 +79,71 @@ export default function CreateRecipe() {
     }
 
     return (
-        <PopupWindow 
-            element={
-                <form
-                    onSubmit={(e) => handleSubmit(e)} 
-                >
-                    <Header1
-                        text='New Recipe'
-                    />
-
-                    <div>
-                        <Header2
-                            text='Recipe Name'
-                        />
-                        <TextInput
-                            onChange={(value) => { setName(value) }}
-                        />
-                    </div>
-
-                    <div>
-                        <Header2
-                            text='Ingredients'
+        <>
+            <PopupWindow 
+                element={
+                    <form
+                        onSubmit={(e) => handleSubmit(e)} 
+                    >
+                        <Header1
+                            text='New Recipe'
                         />
 
-                        <DynamicInputList
-                            textValues={ingredients} 
-                            removeAt={removeIngredient/* TODO: fix */}
-                            onChange={updateIngredient}  
-                            increaseCount={() => { setIngredients(ingredients.concat([new TextValue('')])) }}             
-                        />
-                    </div>
+                        <HorizontalLine />
 
-                    <div>
-                        <Header2
-                            text='Directions'
-                        />
+                        <div>
+                            <Header2
+                                text='Recipe Name'
+                            />
+                            <TextInput
+                                onChange={(value) => { setName(value) }}
+                            />
+                        </div>
 
-                        <DynamicInputList
-                            textValues={directions} 
-                            removeAt={removeDirection/* TODO: fix */}
-                            onChange={updateDirection}   
-                            increaseCount={() => { setDirections(directions.concat([new TextValue('')])) }}
-                            orderedList={true}
-                        />
-                    </div>
+                        <div>
+                            <Header2
+                                text='Ingredients'
+                            />
 
-                    <Button 
-                        type='submit' 
-                        text='Save'
-                    />
-                    
-                </form> 
-            }
-        />
+                            <DynamicInputList
+                                textValues={ingredients} 
+                                removeAt={removeIngredient}
+                                onChange={updateIngredient}  
+                                increaseCount={() => {setIngredients(ingredients.concat([new TextValue('')]))}}             
+                            />
+                        </div>
+
+                        <div>
+                            <Header2
+                                text='Directions'
+                            />
+
+                            <DynamicInputList
+                                textValues={directions} 
+                                removeAt={removeDirection}
+                                onChange={updateDirection}   
+                                increaseCount={() => {setDirections(directions.concat([new TextValue('')]))}}
+                                orderedList={true}
+                            />
+                        </div>
+
+                        <Button 
+                            type='submit' 
+                            element='Save'
+                        />
+                        
+                    </form> 
+                }
+            />
+        
+        {error ? (
+            <PopupAlert 
+                element={error}
+            />
+
+        ) : (
+            null
+        )}
+        </>
     );
 }

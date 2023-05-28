@@ -13,6 +13,7 @@ module.exports = {
           200: '#d4d4d8'
         },
       },
+      fontSize: '1.5rem'
     },
   },
   plugins: [],

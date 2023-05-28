@@ -1,21 +1,21 @@
 interface ButtonProps {
-    text: string;
+    element: string | JSX.Element;
     type?: "button" | "submit" | "reset" | undefined;
     onClick?: () => void;
 }
 
 export default function Button({
     type = "button",
-    text,
+    element,
     onClick
 }: ButtonProps ) {
     return (
         <button 
             type={type}
             onClick={onClick}
-            className="bg-inherit text-sec-100 w-full h-full"
+            className="bg-pri-200 text-sec-100 py-1 px-4 rounded-md"
         >
-            {text}
+            {element}
         </button>
     );
 }

@@ -55,7 +55,7 @@ export default function DynamicInputList({
             for (let i = 0; i < textValues.length; i++) {
                 const newInput = (
                     <div
-                        className="flex w-full"
+                        className="flex w-full justify-center items-center"
                     >
                         <TextInput
                             onChange={(value) => onChange(i, value)}
@@ -63,15 +63,15 @@ export default function DynamicInputList({
                             // autofocus if last input but not first
                             autoFocus={i === textValues.length - 1 && i !== 0}
                         />
-                    
-                        { i === 0 ? (
-                            null
-                        ) : (
-    
+
+                        <div
+                            // set first button invisible to keep all inputs aligned 
+                            className={(i === 0) ? ('invisible') : ('')}
+                        >
                             <CloseButton
                                 onClick={() => removeAt(i)} 
                             />
-                        )}
+                        </div>
                     </div>
                 );
     

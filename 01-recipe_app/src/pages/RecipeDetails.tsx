@@ -1,14 +1,18 @@
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../app/hooks';
+import { useState } from 'react';
 
 import PopupWindow from '../components/PopupWindow';
 import Header1 from '../components/headers/Header1';
 import Header2 from '../components/headers/Header2';
 import List from '../components/List';
+import HorizontalLine from '../components/HorizontalLine';
 
 import {
     selectRecipes
 } from '../features/recipes/recipesSlice';
+
+
 
 
 export default function RecipeDetails() {
@@ -24,6 +28,8 @@ export default function RecipeDetails() {
                         <Header1
                             text={recipe.name}
                         />
+
+                        <HorizontalLine />
                         
                         <Header2
                             text="Ingredients"
