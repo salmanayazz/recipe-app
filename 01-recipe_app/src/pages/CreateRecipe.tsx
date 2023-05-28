@@ -41,12 +41,11 @@ export default function CreateRecipe() {
             recipe = new Recipe(name, ingredientValues, directionValues);
         } 
         catch(e) {
-            if (typeof e === 'string') {
-                setError(e);
+            if (e instanceof Error) {
+                setError(e.message);
             } else {
-                setError('An error occured')
+                setError('An error occured');
             }
-            
             return;
         } 
         
@@ -139,6 +138,7 @@ export default function CreateRecipe() {
         {error ? (
             <PopupAlert 
                 element={error}
+                type='error'
             />
 
         ) : (

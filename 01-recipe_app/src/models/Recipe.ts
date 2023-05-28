@@ -10,9 +10,14 @@ export default class Recipe {
     constructor(name: string, ingredients: string[], directions: string[]) {
         
         // extra error check
-        Recipe.validateName(name);
-        Recipe.validateIngredients(ingredients);
-        Recipe.validateDirections(directions);
+        try {
+            Recipe.validateName(name);
+            Recipe.validateIngredients(ingredients);
+            Recipe.validateDirections(directions);
+        } catch(e) {
+            throw e;
+        }
+        
 
         this.name = name;
         this.ingredients = ingredients;
