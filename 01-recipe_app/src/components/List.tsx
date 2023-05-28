@@ -1,3 +1,5 @@
+import Paragraph from "./Paragraph";
+
 interface ListProps {
     values: string[] | JSX.Element[]
     isOrdered?: boolean
@@ -18,12 +20,18 @@ export default function List({
                 <div>
                     {isOrdered ? (`${index + 1}.`) : ('●')}
                 </div>
-
-                <div
-                    className="flex items-center w-full"
-                >
-                    {value}
-                </div>
+                {(typeof value === 'string') ? (
+                    <Paragraph
+                        text={value}
+                    />
+                ) : (
+                    <div
+                        className="flex items-center w-full"
+                    >
+                        {value}
+                    </div>
+                )}
+                
             </li>
         ));
     }

@@ -19,7 +19,7 @@ export default function PopupWindow({
         >
             <div
                 className="flex flex-col bg-pri-100 z-10 absolute top-1/2 left-1/2 transform 
-                -translate-x-1/2 -translate-y-1/2 px-8 py-5 min-w-[90%] rounded-md max-h-screen overflow-y-auto
+                -translate-x-1/2 -translate-y-1/2 px-8 py-5 min-w-[90%] max-w-[95%] overflow-x-none rounded-md max-h-screen overflow-y-auto
                 md:min-w-[75%] lg:min-w-[50%]"
             >
                 <div 

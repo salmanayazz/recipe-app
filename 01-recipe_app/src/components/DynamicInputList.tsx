@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import uniqid from "uniqid";
 
@@ -47,45 +47,62 @@ export default function DynamicInputList({
     // array of JSX elements that then gets passed to list component to be rendered
     const [inputs, setInputs] = useState<JSX.Element[]>([])
 
-    useEffect(() => {
-        const generateInputArray = () => {
-            const newInputs: JSX.Element[] = [];
-    
-            // Generate the JSX elements based on the parameters
-            for (let i = 0; i < textValues.length; i++) {
-                const newInput = (
-                    <div
-                        className="flex w-full justify-center items-center"
-                    >
-                        <TextInput
-                            onChange={(value) => onChange(i, value)}
-                            //textValue={textValue.value || ""}
-                            // autofocus if last input but not first
-                            autoFocus={i === textValues.length - 1 && i !== 0}
-                        />
+    /**
+     * increases input count when user hits the enter key
+     * @param e - keyboard event
+     */
+    const listenForEnterKey = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault()
+            increaseCount();
+        }
+    }, [increaseCount] )
 
-                        <div
-                            // set first button invisible to keep all inputs aligned 
-                            className={(i === 0) ? ('invisible') : ('')}
-                        >
-                            <CloseButton
-                                onClick={() => removeAt(i)} 
-                            />
-                        </div>
+    /**
+     * regenerates inputs and puts them into a array to then pass to the List component
+     * @returns - JSX array for containing the inputs
+     */
+    const generateInputArray = useCallback(() => {
+        const newInputs: JSX.Element[] = [];
+
+        // Generate the JSX elements based on the parameters
+        for (let i = 0; i < textValues.length; i++) {
+            const newInput = (
+                <div
+                    className="flex w-full justify-center items-center"
+                >
+                    <TextInput
+                        onChange={(value) => onChange(i, value)}
+                        //textValue={textValues[i].value}
+                        // autofocus if last input but not first
+                        autoFocus={i === textValues.length - 1 && i !== 0}
+                        onKeyDown={listenForEnterKey}
+                    />
+
+                    <div
+                        // set first button invisible to keep all inputs aligned 
+                        className={(i === 0) ? ('invisible') : ('')}
+                    >
+                        <CloseButton
+                            onClick={() => removeAt(i)} 
+                        />
                     </div>
-                );
-    
-                newInputs.push(newInput);
-            }
-    
-            return newInputs;
+                </div>
+            );
+
+            newInputs.push(newInput);
         }
 
+        return newInputs;
+    }, [listenForEnterKey, onChange, removeAt, textValues.length])
+
+    /**
+     * regenerate array when textValues updates 
+     */
+    useEffect(() => {
         const newInputs = generateInputArray();
         setInputs(newInputs);
-    }, [textValues, onChange, removeAt]) // TODO: change to use useCallback for onChange, removeAt
-
-    
+    }, [textValues, onChange, removeAt, listenForEnterKey, generateInputArray])
 
     return (
         <div>

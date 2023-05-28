@@ -10,6 +10,7 @@ import HorizontalLine from '../components/HorizontalLine';
 import {
     selectRecipes
 } from '../features/recipes/recipesSlice';
+import Paragraph from '../components/Paragraph';
 
 
 
@@ -27,11 +28,10 @@ export default function RecipeDetails() {
                         <Header1
                             text={recipe.name}
                         />
-                        <div
-                            className='text-sec-200'
-                        >
-                            {`Last Modified: ${recipe.lastModified}`}
-                        </div>
+
+                        <Paragraph
+                            text={`Last Modified: ${recipe.lastModified}`}
+                        />
 
                         <HorizontalLine />
                         

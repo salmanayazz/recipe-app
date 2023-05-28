@@ -106,6 +106,7 @@ export default function CreateRecipe() {
                             />
                             <TextInput
                                 onChange={(value) => { setName(value) }}
+                                textValue={name}
                             />
                         </div>
 

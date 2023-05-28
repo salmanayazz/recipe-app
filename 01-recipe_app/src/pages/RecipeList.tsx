@@ -23,7 +23,7 @@ export default function RecipeList() {
             items-center py-2 overflow-y-auto"
         >   
             <div
-                className='w-9/10 md:w-3/4'
+                className='w-[90%] md:w-[75%]'
             >
                 <div
                     className='flex items-center gap-2'
@@ -39,6 +39,7 @@ export default function RecipeList() {
                         <AddButton />
                     </NavLink>
                     <button
+                        // TODO: remove 
                         onClick={() => localStorage.clear()}
                     >
                         clear
