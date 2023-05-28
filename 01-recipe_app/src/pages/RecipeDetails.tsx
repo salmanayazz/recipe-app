@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../app/hooks';
-import { useState } from 'react';
 
 import PopupWindow from '../components/PopupWindow';
 import Header1 from '../components/headers/Header1';
@@ -29,7 +28,7 @@ export default function RecipeDetails() {
                             text={recipe.name}
                         />
                         <div
-                            className='text-sec-200 '
+                            className='text-sec-200'
                         >
                             {`Last Modified: ${recipe.lastModified.toLocaleDateString(undefined, {
                                 year: "numeric", 

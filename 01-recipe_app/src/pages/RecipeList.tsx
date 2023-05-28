@@ -23,7 +23,7 @@ export default function RecipeList() {
             items-center py-2 overflow-y-auto"
         >   
             <div
-                className='w-3/4'
+                className='w-9/10 md:w-3/4'
             >
                 <div
                     className='flex items-center gap-2'
