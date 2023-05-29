@@ -1,16 +1,14 @@
-import { useNavigate } from 'react-router-dom';
-
 import CloseButton from './buttons/CloseButton';
 
 interface PopupWindowProps {
     element: JSX.Element
+    onExit: () => void
 }
 
 export default function PopupWindow({
-    element
+    element,
+    onExit
 }: PopupWindowProps) {
-    const navigate = useNavigate();
-
     return (
         <div 
             // blurred background
@@ -26,7 +24,7 @@ export default function PopupWindow({
                     className='flex absolute top-3 right-3'
                 >
                     <CloseButton 
-                        onClick={() => navigate(-1)}     
+                        onClick={onExit}     
                     />
                 </div>
                 

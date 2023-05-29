@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useAppDispatch } from '../app/hooks';
-import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { TextValue } from '../components/DynamicInputList';
 import PopupWindow from '../components/PopupWindow';
@@ -13,33 +13,46 @@ import PopupAlert from '../components/PopupAlert';
 import Recipe from '../models/Recipe';
 
 import {
-    addRecipe
+    updateRecipe,
+    selectRecipes
 } from '../features/recipes/recipesSlice';
 
 
-
-export default function CreateRecipe() {
+export default function EditRecipe() {
+    let { recipeId } = useParams();
+    const recipes: Recipe[] = useAppSelector(selectRecipes);
+    const recipe: Recipe | undefined = recipes.find((recipe) => recipe.id === recipeId);
+    
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const [name, setName] = useState<string>('');
-    const [ingredients, setIngredients] = useState<TextValue[]>([new TextValue("")]);
-    const [directions, setDirections] = useState<TextValue[]>([new TextValue("")]);
+    const [name, setName] = useState<string>((recipe ? recipe.name : ''));
+    const [ingredients, setIngredients] = useState<TextValue[]>(generateTextValue(recipe?.ingredients));
+    const [directions, setDirections] = useState<TextValue[]>(generateTextValue(recipe?.directions));
 
     const [error, setError] = useState<any>();
 
-    function afterSubmit(recipe: Recipe) {
+    function afterSubmit(newRecipe: Recipe) {
         try {
-            dispatch(addRecipe(recipe));
+            dispatch(updateRecipe(newRecipe));
         } catch(e) {
             console.log(e);
             return;
         }
+        
         returnHome();
     }
 
+    function generateTextValue(array: string[] | undefined): TextValue[]  {
+        let textValues: TextValue[] = [];
+        array?.forEach((value) => {
+            textValues.push(new TextValue(value));
+        })
+        return textValues
+    }
+
     function returnHome() {
-        navigate(-1);
+        navigate(-2);
     }
 
     return (
@@ -48,12 +61,13 @@ export default function CreateRecipe() {
                 element={
                     <>
                         <Header1
-                            text='New Recipe'
+                            text='Edit Recipe'
                         />
 
                         <HorizontalLine />
                         
-                        <RecipeForm 
+                        <RecipeForm
+                            recipe={recipe}
                             name={name}
                             setName={setName}
                             ingredients={ingredients}
@@ -68,7 +82,7 @@ export default function CreateRecipe() {
                 onExit={returnHome}
             />
         
-        {error ? (
+        {error ? ( // TODO: remove this error and place somewehre else
             <PopupAlert 
                 element={error}
                 type='error'

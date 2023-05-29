@@ -73,7 +73,7 @@ export default function DynamicInputList({
                 >
                     <TextInput
                         onChange={(value) => onChange(i, value)}
-                        //textValue={textValues[i].value}
+                        textValue={textValues[i].value}
                         // autofocus if last input but not first
                         autoFocus={i === textValues.length - 1 && i !== 0}
                         onKeyDown={listenForEnterKey}
@@ -94,7 +94,7 @@ export default function DynamicInputList({
         }
 
         return newInputs;
-    }, [listenForEnterKey, onChange, removeAt, textValues.length])
+    }, [listenForEnterKey, onChange, removeAt, textValues])
 
     /**
      * regenerate array when textValues updates 
@@ -111,7 +111,10 @@ export default function DynamicInputList({
                 isOrdered={orderedList}
             />
             <AddButton
-                onClick={() => increaseCount()} 
+                onClick={() => {
+                    increaseCount()
+                    //TODO: set autofocus on last input after button press
+                }} 
             />
         </div>
     );
