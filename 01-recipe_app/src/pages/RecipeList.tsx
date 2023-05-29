@@ -26,7 +26,7 @@ export default function RecipeList() {
                 className='w-[90%] md:w-[75%]'
             >
                 <div
-                    className='flex items-center gap-6'
+                    className='flex items-center gap-4'
                 >
                     <Header1
                         text='Saved Recipes'
@@ -38,12 +38,6 @@ export default function RecipeList() {
                     >
                         <AddButton />
                     </NavLink>
-                    <button
-                        // TODO: remove 
-                        onClick={() => localStorage.clear()}
-                    >
-                        clear
-                    </button>
                 </div>
                 <HorizontalLine />
                 
