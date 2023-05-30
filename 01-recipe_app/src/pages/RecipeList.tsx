@@ -10,8 +10,8 @@ import HorizontalLine from '../components/HorizontalLine';
 
 import {
     selectRecipes
-} from '../features/recipes/recipesSlice';
-
+} from '../features/recipesSlice';
+import PopupAlert from '../components/PopupAlert';
 
 
 export default function RecipeList() {
@@ -59,6 +59,7 @@ export default function RecipeList() {
                 </div>
             </div>
             
+            <PopupAlert />
 
             {/* outlet to render RecipeDetails and CreateRecipe pages ontop of this page */ }
             <Outlet />

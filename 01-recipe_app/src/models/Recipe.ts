@@ -15,7 +15,6 @@ export default class Recipe {
     });
 
     constructor(name: string, ingredients: string[], directions: string[]) {
-        
         // extra error check
         try {
             Recipe.validateName(name);

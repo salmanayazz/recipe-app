@@ -1,36 +1,45 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef } from "react"
+import { useAppDispatch, useAppSelector } from '../app/hooks';
 
 import Header2 from "./headers/Header2";
 
-interface PopupAlertProps {
-    element: string
-    type?: 'neutral' | 'error' | 'success'
-}
+import {
+    selectAlert,
+    clearAlert
+} from '../features/alertSlice';
 
-export default function PopupAlert({
-    element,
-    type = 'neutral'
-}: PopupAlertProps) {
+export default function PopupAlert() {
+    const dispatch = useAppDispatch();
+    const alert = useAppSelector(selectAlert);
 
-    const [isVisible, setIsVisible] = useState<boolean>(true);
+    let timeoutRef = useRef<NodeJS.Timeout | undefined>();
 
     useEffect(() => {
-        setIsVisible(true);
-        setTimeout(() => {
-            setIsVisible(false);
-        }, 6000)
-    }, [element])
+        // reset any previous timeouts to reset the timer of new alerts
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => {
+            dispatch(clearAlert());
+        }, 8000)
+    }, [alert.text, alert.alertType, dispatch])
 
     return(
         <>
-            {isVisible ? (
+            {alert.alertType ? (
                 <div
+                    // TODO: only have a design for error alerts right now
                     className={`absolute bottom-1 right-1 px-12 py-10 mb-5 rounded-s-md
-                    bg-error`}
+                    bg-error z-50`}
                 >
-                    <Header2
-                        text={element}
-                    />
+                    {alert.text ? (
+                        <Header2
+                            text={alert.text}
+                        />
+                    ) : (
+                        null
+                    )}
+                    
                 </div>
             ) : (
                 null

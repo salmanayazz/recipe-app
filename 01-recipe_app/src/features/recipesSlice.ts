@@ -1,15 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../../app/store';
-import Recipe from '../../models/Recipe';
-import LocalDB from '../../utils/LocalDB';
+import { RootState } from '../app/store';
 
-export interface RecipeState {
-  recipes: Recipe[]
+import Recipe from '../models/Recipe';
+import LocalDB from '../utils/LocalDB';
+
+export interface RecipesState {
+  // TODO: serialized object warning occurs here, but doesn't seem to affect anything
+  recipes: Recipe[];
 }
 
 const storage = new LocalDB();
 
-const initialState: RecipeState = {
+const initialState: RecipesState = {
   recipes: storage.getRecipes()
 };
 
@@ -19,7 +21,6 @@ export const recipesSlice = createSlice({
   reducers: {
     addRecipe: (state, action: PayloadAction<Recipe>) => {
       const recipe = { ...action.payload };
-      // TODO: change recipe to use a serializable object 
       try {
         storage.addRecipe(recipe)
       } catch (e) {
@@ -54,6 +55,7 @@ export const recipesSlice = createSlice({
     }
   },
 });
+
 
 export const { 
   addRecipe,

@@ -1,9 +1,16 @@
+import { useAppDispatch } from '../app/hooks';
+
 import Recipe from "../models/Recipe";
 
 import DynamicInputList, { TextValue } from "./DynamicInputList";
 import TextInput from "./TextInput";
 import Button from "./buttons/Button";
 import Header2 from "./headers/Header2";
+
+import {
+    setAlert,
+    AlertState
+} from '../features/alertSlice';
 
 interface RecipeFormProps {
     recipe?: Recipe
@@ -13,8 +20,7 @@ interface RecipeFormProps {
     setIngredients: React.Dispatch<React.SetStateAction<TextValue[]>>
     directions: TextValue[]
     setDirections: React.Dispatch<React.SetStateAction<TextValue[]>>
-    afterSubmit: (recipe: Recipe) => void 
-    setError: React.Dispatch<any>
+    afterSubmit: (recipe: Recipe) => void
 }
 
 export default function RecipeForm({
@@ -25,9 +31,9 @@ export default function RecipeForm({
     setIngredients,
     directions,
     setDirections,
-    afterSubmit,
-    setError
+    afterSubmit
 }: RecipeFormProps) {
+    const dispatch = useAppDispatch();
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -41,9 +47,19 @@ export default function RecipeForm({
         } 
         catch(e) {
             if (e instanceof Error) {
-                setError(e.message);
+                dispatch(
+                    setAlert({
+                        text: e.message, 
+                        alertType: 'error',
+                    })
+                );
             } else {
-                setError('An error occured');
+                dispatch(
+                    setAlert({
+                        text: undefined, 
+                        alertType: 'error',
+                    })
+                );
             }
             return;
         } 

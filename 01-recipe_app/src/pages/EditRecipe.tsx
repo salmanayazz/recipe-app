@@ -15,7 +15,7 @@ import Recipe from '../models/Recipe';
 import {
     updateRecipe,
     selectRecipes
-} from '../features/recipes/recipesSlice';
+} from '../features/recipesSlice';
 
 
 export default function EditRecipe() {
@@ -29,8 +29,6 @@ export default function EditRecipe() {
     const [name, setName] = useState<string>((recipe ? recipe.name : ''));
     const [ingredients, setIngredients] = useState<TextValue[]>(generateTextValue(recipe?.ingredients));
     const [directions, setDirections] = useState<TextValue[]>(generateTextValue(recipe?.directions));
-
-    const [error, setError] = useState<any>();
 
     function afterSubmit(newRecipe: Recipe) {
         try {
@@ -56,41 +54,28 @@ export default function EditRecipe() {
     }
 
     return (
-        <>
-            <PopupWindow 
-                element={
-                    <>
-                        <Header1
-                            text='Edit Recipe'
-                        />
+        <PopupWindow 
+            element={
+                <>
+                    <Header1
+                        text='Edit Recipe'
+                    />
 
-                        <HorizontalLine />
-                        
-                        <RecipeForm
-                            recipe={recipe}
-                            name={name}
-                            setName={setName}
-                            ingredients={ingredients}
-                            setIngredients={setIngredients}
-                            directions={directions}    
-                            setDirections={setDirections}
-                            afterSubmit={afterSubmit}
-                            setError={setError}
-                        />
-                    </>
-                }
-                onExit={returnHome}
-            />
-        
-        {error ? ( // TODO: remove this error and place somewehre else
-            <PopupAlert 
-                element={error}
-                type='error'
-            />
-
-        ) : (
-            null
-        )}
-        </>
+                    <HorizontalLine />
+                    
+                    <RecipeForm
+                        recipe={recipe}
+                        name={name}
+                        setName={setName}
+                        ingredients={ingredients}
+                        setIngredients={setIngredients}
+                        directions={directions}    
+                        setDirections={setDirections}
+                        afterSubmit={afterSubmit}
+                    />
+                </>
+            }
+            onExit={returnHome}
+        />
     );
 }

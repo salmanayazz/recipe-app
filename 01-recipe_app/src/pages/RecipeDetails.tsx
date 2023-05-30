@@ -13,7 +13,7 @@ import Paragraph from '../components/Paragraph';
 import {
     selectRecipes,
     deleteRecipe
-} from '../features/recipes/recipesSlice';
+} from '../features/recipesSlice';
 
 
 export default function RecipeDetails() {
