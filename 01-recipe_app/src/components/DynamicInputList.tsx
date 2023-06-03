@@ -28,10 +28,12 @@ export class TextValue {
  * A component that allows for a dynamic number of text inputs
  * @param textValues
  * The values of the text inputs
- * @function removeAt(valueID: string)
+ * @function removeAt
  * A function that removes a text input with the given ID
- * @param onChange
+ * @function onChange
  * A function that updates the value of a text input at a given index
+ * @function increaseCount
+ * increases the textValues size when called
  * @param orderedList
  * Whether or not the list of inputs should be ordered
  * ordered = numbered 1, 2, 3, etc.
