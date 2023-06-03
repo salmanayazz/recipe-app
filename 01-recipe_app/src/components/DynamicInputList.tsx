@@ -80,8 +80,9 @@ export default function DynamicInputList({
                     />
 
                     <div
+                        // if theres only one input, do not show the remove button 
                         // set first button invisible to keep all inputs aligned 
-                        className={(i === 0) ? ('invisible') : ('')}
+                        className={(textValues.length === 1 && i === 0) ? ('invisible') : ('')}
                     >
                         <CloseButton
                             onClick={() => removeAt(i)} 

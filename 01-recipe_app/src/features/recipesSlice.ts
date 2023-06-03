@@ -5,7 +5,7 @@ import Recipe from '../models/Recipe';
 import LocalDB from '../utils/LocalDB';
 
 export interface RecipesState {
-  // TODO: serialized object warning occurs here, but doesn't seem to affect anything
+  // TODO: serialized object warning occurs here, but nothing seems to be broken
   recipes: Recipe[];
 }
 
