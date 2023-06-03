@@ -8,8 +8,7 @@ import Button from "./buttons/Button";
 import Header2 from "./headers/Header2";
 
 import {
-    setAlert,
-    AlertState
+    setAlert
 } from '../features/alertSlice';
 
 interface RecipeFormProps {

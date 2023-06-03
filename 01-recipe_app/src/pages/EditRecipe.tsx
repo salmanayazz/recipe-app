@@ -8,8 +8,6 @@ import Header1 from '../components/headers/Header1';
 import HorizontalLine from '../components/HorizontalLine';
 import RecipeForm from '../components/RecipeForm';
 
-import PopupAlert from '../components/PopupAlert';
-
 import Recipe from '../models/Recipe';
 
 import {
