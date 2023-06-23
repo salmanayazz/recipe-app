@@ -11,29 +11,35 @@ export default function List({
 }: ListProps) {
 
     function renderValues() {
-        return values.map((value: string | JSX.Element, index: number) => (
-            <li
-                key={index} 
-                className="flex gap-2 w-full ml-2 text-sec-200"
-            >
-                
-                <div>
-                    {isOrdered ? (`${index + 1}.`) : ('●')}
-                </div>
-                {(typeof value === 'string') ? (
-                    <Paragraph
-                        text={value}
-                    />
-                ) : (
-                    <div
-                        className="flex items-center w-full"
+        return (
+            values ? (
+                values.map((value: string | JSX.Element, index: number) => (
+                    <li
+                        key={index} 
+                        className="flex gap-2 w-full ml-2 text-sec-200"
                     >
-                        {value}
-                    </div>
-                )}
-                
-            </li>
-        ));
+                        
+                        <div>
+                            {isOrdered ? (`${index + 1}.`) : ('●')}
+                        </div>
+                        {(typeof value === 'string') ? (
+                            <Paragraph
+                                text={value}
+                            />
+                        ) : (
+                            <div
+                                className="flex items-center w-full"
+                            >
+                                {value}
+                            </div>
+                        )}
+                        
+                    </li>
+                ))
+            ) : (
+                null
+            )
+        )
     }
 
     return (

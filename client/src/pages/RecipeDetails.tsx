@@ -1,5 +1,6 @@
 import { useParams, NavLink, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { useEffect } from 'react';
 
 import PopupWindow from '../components/PopupWindow';
 import Header1 from '../components/headers/Header1';
@@ -11,7 +12,7 @@ import DeleteButton from '../components/buttons/DeleteButton'
 import Paragraph from '../components/Paragraph';
 
 import {
-    selectRecipes,
+    getRecipes,
     deleteRecipe
 } from '../features/recipesSlice';
 
@@ -21,13 +22,16 @@ export default function RecipeDetails() {
     const navigate = useNavigate();
 
     let { recipeId } = useParams();
-    const recipes = useAppSelector(selectRecipes);
-    const recipe = recipes.find((recipe) => recipe.id === recipeId);
+    console.log('1');
+    const recipes = useAppSelector(getRecipes);
+    console.log('2');
+    const recipe = recipes?.find((recipe) => recipe._id === recipeId);
+    console.log('3');
 
     function handleDelete(): void {
-        if (!recipe) {return}
+        if (!recipe || !recipe._id) {return}
         try {
-            dispatch(deleteRecipe(recipe));
+            dispatch(deleteRecipe(recipe._id));
         } catch(e) {
             console.log(e);
             return;

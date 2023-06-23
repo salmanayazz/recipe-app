@@ -65,7 +65,7 @@ export default function RecipeForm({
 
         // if a recipe param was passed, use its id in the new one
         if (recipe) {
-            newRecipe.id = recipe.id
+            newRecipe._id = recipe._id
         }
         
         afterSubmit(newRecipe);

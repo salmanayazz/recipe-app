@@ -11,7 +11,7 @@ import RecipeForm from '../components/RecipeForm';
 import Recipe from '../models/Recipe';
 
 import {
-    addRecipe
+    createRecipe
 } from '../features/recipesSlice';
 
 
@@ -26,7 +26,7 @@ export default function CreateRecipe() {
 
     function afterSubmit(recipe: Recipe) {
         try {
-            dispatch(addRecipe(recipe));
+            dispatch(createRecipe(recipe));
         } catch(e) {
             console.log(e);
             return;

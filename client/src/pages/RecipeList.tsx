@@ -1,22 +1,32 @@
 import { NavLink, Outlet } from 'react-router-dom';
-
+import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../app/hooks';
+import { useEffect } from 'react';
+import { AppDispatch } from '../app/store';
 
 import AddButton from '../components/buttons/AddButton';
 import Recipe from '../models/Recipe';
 import Header2 from '../components/headers/Header2';
 import Header1 from '../components/headers/Header1';
 import HorizontalLine from '../components/HorizontalLine';
+import PopupAlert from '../components/PopupAlert';
 
 import {
-    selectRecipes
+    getRecipes,
+    fetchRecipes
 } from '../features/recipesSlice';
-import PopupAlert from '../components/PopupAlert';
+
 
 
 export default function RecipeList() {
-    const recipes = useAppSelector(selectRecipes);
+    const dispatch = useDispatch<AppDispatch>();
+    const recipes: Recipe[] = useAppSelector(getRecipes);
     
+    useEffect(() => {
+        dispatch(fetchRecipes());
+    }, [dispatch]);
+    
+    console.log(recipes);
     return (
         <div 
             className="flex flex-col bg-pri-100 text-sec-100 min-h-screen min-w-screen
@@ -45,17 +55,26 @@ export default function RecipeList() {
                 <div
                     className='flex flex-col justify-center items-center gap-5 my-4'
                 >
-                    { recipes.map((recipe: Recipe) => (
-                        <NavLink 
-                            key={recipe.id}
-                            to={recipe.id}
-                            className='flex items-center w-full bg-pri-200 rounded-md px-4 py-2'
-                        >
-                            <Header2
-                                text={recipe.name}
-                            />
-                        </NavLink>
-                    ))}
+                    { recipes ? (
+                        recipes.map((recipe: Recipe) => (
+                            recipe._id ? (
+                                <NavLink 
+                                    key={recipe._id}
+                                    to={recipe._id}
+                                    className='flex items-center w-full bg-pri-200 rounded-md px-4 py-2'
+                                >
+                                    <Header2
+                                        text={recipe.name}
+                                    />
+                                </NavLink>
+                            ) : (
+                                null
+                            )
+                        ))
+                        ) : (
+                            null
+                        )
+                    }
                 </div>
             </div>
             

@@ -12,14 +12,14 @@ import Recipe from '../models/Recipe';
 
 import {
     updateRecipe,
-    selectRecipes
+    getRecipes
 } from '../features/recipesSlice';
 
 
 export default function EditRecipe() {
     let { recipeId } = useParams();
-    const recipes: Recipe[] = useAppSelector(selectRecipes);
-    const recipe: Recipe | undefined = recipes.find((recipe) => recipe.id === recipeId);
+    const recipes: Recipe[] = useAppSelector(getRecipes);
+    const recipe: Recipe | undefined = recipes.find((recipe) => recipe._id === recipeId);
     
     const dispatch = useAppDispatch();
     const navigate = useNavigate();

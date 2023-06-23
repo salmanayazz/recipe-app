@@ -1,7 +1,7 @@
 import uniqid from 'uniqid';
 
 export default class Recipe {
-    id: string = uniqid();
+    _id: string | undefined;
     name: string;
     ingredients: string[];
     directions: string[];

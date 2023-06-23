@@ -1,68 +1,104 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../app/store';
 
 import Recipe from '../models/Recipe';
-import LocalDB from '../utils/LocalDB';
+
+//import dotenv from 'dotenv';
+import axios from 'axios';
+//dotenv.config();
+
+
+let SERVER = 'http://localhost:12345'//TODO: move to .env file
+
+// async actions
+export const fetchRecipes = createAsyncThunk('recipes/fetchRecipes', async () => {
+  if (SERVER) {
+    const response = await axios.get(`${SERVER}/recipes`);
+    console.log(response.data);
+    return response.data;
+  }
+});
+
+export const createRecipe = createAsyncThunk('recipes/createRecipes', async (recipeData: Recipe) => {
+  if (SERVER) {
+    const response = await axios.post(`${SERVER}/recipes`, recipeData);
+    return response.data;
+  }
+});
+
+export const updateRecipe = createAsyncThunk('recipes/updateRecipes', async (recipeData: Recipe) => {
+  if (SERVER) {
+    const response = await axios.put(`${SERVER}/recipes/${recipeData._id}`, recipeData);
+    return response.data;
+  }
+});
+
+export const deleteRecipe = createAsyncThunk('recipes/deleteRecipes', async (recipeID: string) => {
+  if (SERVER) {
+    const response = await axios.delete(`${SERVER}/recipes/${recipeID}`);
+    return response.data;
+  }
+});
 
 export interface RecipesState {
   // TODO: serialized object warning occurs here, but nothing seems to be broken
   recipes: Recipe[];
+  status: 'idle' | 'loading' | 'success' | 'fail';
+  error: string | undefined;
 }
 
-const storage = new LocalDB();
-
 const initialState: RecipesState = {
-  recipes: storage.getRecipes()
+  //recipes: storage.getRecipes(),
+  recipes: [],
+  status: 'idle',
+  error: undefined
 };
 
 export const recipesSlice = createSlice({
   name: 'recipes',
   initialState,
   reducers: {
-    addRecipe: (state, action: PayloadAction<Recipe>) => {
-      const recipe = { ...action.payload };
-      try {
-        storage.addRecipe(recipe)
-      } catch (e) {
-        throw e;
-      }
-      state.recipes.push(recipe);
-    },
-
-    updateRecipe: (state, action: PayloadAction<Recipe>) => {
-      const recipe = { ...action.payload }; 
-      try {
-        storage.updateRecipe(recipe)
-      } catch (e) {
-        throw e;
-      }
-      state.recipes.forEach((oldRecipe, index) => {
-        if (oldRecipe.id === recipe.id) {
-          state.recipes[index] = recipe; 
+  },
+  extraReducers: (builder) => {
+    builder
+      .addMatcher(
+        (action) =>
+          action.type === fetchRecipes.pending.type ||
+          action.type === createRecipe.pending.type ||
+          action.type === updateRecipe.pending.type ||
+          action.type === deleteRecipe.pending.type,
+        (state) => {
+          state.status = 'loading';
         }
-      })
-    },
-
-    deleteRecipe: (state, action: PayloadAction<Recipe>) => {
-      const recipe = { ...action.payload }; 
-      try {
-        storage.deleteRecipe(recipe.id)
-      } catch (e) {
-        throw e;
-      }
-      state.recipes = state.recipes.filter((oldRecipe) => oldRecipe.id !== recipe.id);
-      
-    }
+      )
+      .addMatcher(
+        (action) =>
+          action.type === fetchRecipes.fulfilled.type ||
+          action.type === createRecipe.fulfilled.type ||
+          action.type === updateRecipe.fulfilled.type ||
+          action.type === deleteRecipe.fulfilled.type,
+        (state, action) => {
+          console.log(action);
+          state.status = 'success';
+          state.error = undefined;
+          state.recipes = action.payload;
+        }
+      )
+      .addMatcher(
+        (action) =>
+          action.type === fetchRecipes.rejected.type ||
+          action.type === createRecipe.rejected.type ||
+          action.type === updateRecipe.rejected.type ||
+          action.type === deleteRecipe.rejected.type,
+        (state, action) => {
+          state.status = 'fail';
+          state.error = action.error.message; // TODO: might want to change this
+          state.recipes = action.payload;
+        }
+      )
   },
 });
 
-
-export const { 
-  addRecipe,
-  updateRecipe,
-  deleteRecipe
-} = recipesSlice.actions;
-
-export const selectRecipes = (state: RootState) => state.recipes.recipes;
+export const getRecipes = (state: RootState) => state.recipes.recipes;
 
 export default recipesSlice.reducer;
