@@ -15,6 +15,7 @@ import {
     getRecipes,
     fetchRecipes
 } from '../features/recipesSlice';
+import RecipeCard from '../components/RecipeCard';
 
 
 
@@ -53,28 +54,25 @@ export default function RecipeList() {
                 
 
                 <div
-                    className='flex flex-col justify-center items-center gap-5 my-4'
+                    className='grid grid-cols-auto-fit-20 
+                    grid-rows-300 justify-center gap-5 my-4 w-100'
                 >
-                    { recipes ? (
-                        recipes.map((recipe: Recipe) => (
-                            recipe._id ? (
-                                <NavLink 
-                                    key={recipe._id}
-                                    to={recipe._id}
-                                    className='flex items-center w-full bg-pri-200 rounded-md px-4 py-2'
-                                >
-                                    <Header2
-                                        text={recipe.name}
-                                    />
-                                </NavLink>
-                            ) : (
-                                null
-                            )
-                        ))
+                    {recipes.map((recipe: Recipe) => (
+                        recipe._id ? (
+                            <NavLink 
+                                key={recipe._id}
+                                to={recipe._id}
+                                className='flex items-center bg-pri-200 rounded-md px-4 py-2'
+                            >
+                                <RecipeCard 
+                                    recipe={recipe}
+                                />
+                            </NavLink>
+                            
                         ) : (
                             null
                         )
-                    }
+                    ))}
                 </div>
             </div>
             
