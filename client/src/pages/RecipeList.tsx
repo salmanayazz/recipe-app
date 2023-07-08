@@ -17,7 +17,6 @@ import {
 } from '../features/recipesSlice';
 
 
-
 export default function RecipeList() {
     const dispatch = useDispatch<AppDispatch>();
     const recipes: Recipe[] = useAppSelector(getRecipes);

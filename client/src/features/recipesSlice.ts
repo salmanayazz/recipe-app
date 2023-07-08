@@ -8,7 +8,7 @@ import axios from 'axios';
 //dotenv.config();
 
 
-let SERVER = 'http://localhost:12345'//TODO: move to .env file
+let SERVER = 'http://localhost:3001'//TODO: move to .env file
 
 // async actions
 export const fetchRecipes = createAsyncThunk('recipes/fetchRecipes', async () => {
@@ -61,7 +61,7 @@ export const recipesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addMatcher(
+      .addMatcher( // pending
         (action) =>
           action.type === fetchRecipes.pending.type ||
           action.type === createRecipe.pending.type ||
@@ -71,20 +71,20 @@ export const recipesSlice = createSlice({
           state.status = 'loading';
         }
       )
-      .addMatcher(
+      .addMatcher( // after success
         (action) =>
           action.type === fetchRecipes.fulfilled.type ||
           action.type === createRecipe.fulfilled.type ||
           action.type === updateRecipe.fulfilled.type ||
           action.type === deleteRecipe.fulfilled.type,
         (state, action) => {
-          console.log(action);
+          console.log(action.payload);
           state.status = 'success';
           state.error = undefined;
           state.recipes = action.payload;
         }
       )
-      .addMatcher(
+      .addMatcher( // after fail
         (action) =>
           action.type === fetchRecipes.rejected.type ||
           action.type === createRecipe.rejected.type ||
@@ -92,8 +92,7 @@ export const recipesSlice = createSlice({
           action.type === deleteRecipe.rejected.type,
         (state, action) => {
           state.status = 'fail';
-          state.error = action.error.message; // TODO: might want to change this
-          state.recipes = action.payload;
+          state.error = action.error.message; // TODO: might not be showing the correct error message i want to show
         }
       )
   },

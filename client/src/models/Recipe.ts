@@ -1,5 +1,3 @@
-import uniqid from 'uniqid';
-
 export default class Recipe {
     _id: string | undefined;
     name: string;

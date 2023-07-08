@@ -1,107 +1,124 @@
 var express = require('express');
 var router = express.Router();
-const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config();
-const { ObjectId } = require('bson');
+const mongoose = require('mongoose');
+mongoose.connect(process.env.DATABASE);
 
+const Recipe = require('../models/Recipe');
+const Ingredient = require('../models/Ingredient');
 
-const url = process.env.DATABASE;
+mongoose.connection.on('open', function (ref) {
+    console.log('Connected to mongo server.');
+})
 
-const client = new MongoClient(url);
-
-// test connection
-(async function() {
-    try {
-        // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
-        // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
-    } finally {
-        // Ensures that the client will close when you finish/error
-        await client.close();
-    }
-})()
-
-function formatIdToString(id) {
-    return id.toString();
-}
-
-function formatIdToObj(id) {
-    return new ObjectId(id);
-}
-
-router.get('/', async function(req, res, next) {
-    try {
-        console.log("get")
-        await client.connect();
-        const database = client.db("recipes");
-        const collection = database.collection("recipe");
-        const recipes = await collection.find({}).toArray();
-        const recipesWithConvertedId = recipes.map((recipe) => ({
-            ...recipe,
-            _id: recipe._id.toString(),
+async function getRecipesWithIngredientNames() {
+    const recipes = await Recipe.find();
+    // replace ingredient _id with ingredient name
+    const recipesWithNames = await Promise.all(recipes.map(async (recipe) => {
+        const ingredients = await Promise.all(recipe.ingredients.map(async (ingredient) => {
+            const ingredientName = await Ingredient.findById(ingredient);
+            return ingredientName.name;
         }));
-        res.json(recipesWithConvertedId);
-    } finally { 
-        //await client.close(); TODO: seems to be crashing the server
-    }
-});
-
-router.get('/:recipeID', function(req, res, next) {
+        return {
+            ...recipe._doc,
+            ingredients,
+        };
+    }));
+    return recipesWithNames;
     
- 
+}
+
+router.get('/', async function(req, res) {
+    try {        
+        res.json(await getRecipesWithIngredientNames());
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 });
 
-router.post('/', async function(req, res, next) {
-    try { 
-        console.log(req.body)
-        await client.connect();
-        const database = client.db("recipes");
-        const collection = database.collection("recipe")
-        const result = await collection.insertOne(
-            req.body 
+router.post('/', async function(req, res) {
+    try {
+        const ingredients = req.body.ingredients;
+    
+        // Create an array to store the ingredient references
+        const ingredientRefs = [];
+    
+        // Iterate over the ingredients and create them if they don't exist
+        for (const ingredientName of ingredients) {
+            let ingredient = await Ingredient.findOne({ name: ingredientName });
+        
+            if (!ingredient) {
+                ingredient = await Ingredient.create({ name: ingredientName });
+            }
+        
+            ingredientRefs.push(ingredient._id);
+        }
+    
+        // Create the recipe
+        const recipe = await Recipe.create({
+            ...req.body,
+            ingredients: ingredientRefs,
+        });
+    
+        res.json(await getRecipesWithIngredientNames());
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+})
+
+router.put('/:recipeID', async function(req, res) {
+    try {
+        const { name, ingredients, directions, lastModified } = req.body;
+    
+        // Create an array to store the ingredient references
+        const ingredientRefs = [];
+    
+        // Iterate over the ingredients and create them if they don't exist
+        for (const ingredientName of ingredients) {
+            let ingredient = await Ingredient.findOne({ name: ingredientName });
+        
+            if (!ingredient) {
+                ingredient = await Ingredient.create({ name: ingredientName });
+            }
+        
+            ingredientRefs.push(ingredient._id);
+        }
+    
+        const recipe = await Recipe.findByIdAndUpdate(
+            req.params.recipeID, {
+                name,
+                ingredients: ingredientRefs,
+                directions,
+                lastModified
+            },
+            { new: true }
         );
-        res.json(await collection.find({}).toArray());
-    } catch(error)  {
-        res.status(500).json(result); // TODO: fix error
-    } finally {
-        await client.close();
+    
+        if (!recipe) {
+            return res.status(404).json({ message: 'Recipe not found' });
+        }
+    
+        res.json(await getRecipesWithIngredientNames());
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 })
 
-router.put('/:recipeID', async function(req, res, next) {
+router.delete('/:recipeID', async function(req, res) {
     try {
-        console.log(req.body) 
-        await client.connect();
-        const database = client.db("recipes");
-        const collection = database.collection("recipe");
-        req.body._id = formatIdToObj(req.body._id);
-        const result = await collection.replaceOne({ _id: req.body._id }, req.body);
-        console.log(result);
+        const recipe = await Recipe.findByIdAndDelete(req.params.recipeID);
 
-        res.json(await collection.find({}).toArray());
-    } catch(error) {
-        res.status(500).json(error); // TODO: fix error
-    } finally {
-        await client.close();
-    }
-})
+        if (!recipe) {
+            return res.status(404).json({ message: 'Recipe not found' });
+        }
 
-router.delete('/:recipeID', async function(req, res, next) {
-    try {
-        console.log(req);
-
-        await client.connect();
-        const database = client.db("recipes");
-        const collection = database.collection("recipe");
-        req.body._id = formatIdToObj(req.body._id);
-        const result = await collection.deleteOne({ _id: formatIdToObj(req.params.recipeID) });
-        res.json(await collection.find({}).toArray());
-    } catch(error) {
-        res.json(error); // TODO: fix error
-    } finally {
-        await client.close();
+        res.json(await getRecipesWithIngredientNames());
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 })
 
