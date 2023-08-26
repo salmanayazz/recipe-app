@@ -1,15 +1,10 @@
 var express = require('express');
 var router = express.Router();
 require('dotenv').config();
-const mongoose = require('mongoose');
-mongoose.connect(process.env.DATABASE);
 
 const Recipe = require('../models/Recipe');
 const Ingredient = require('../models/Ingredient');
 
-mongoose.connection.on('open', function (ref) {
-    console.log('Connected to mongo server.');
-})
 
 async function getRecipesWithIngredientNames() {
     const recipes = await Recipe.find();

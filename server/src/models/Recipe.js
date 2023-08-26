@@ -15,8 +15,8 @@ var recipeSchema = new mongoose.Schema({
         required: true,
     },
     lastModified: {
-        type: String, 
-        required: true,
+        type: Date,
+        default: Date.now,
     },
 })
 

@@ -4,6 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
+const mongoose = require('mongoose');
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -21,6 +23,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
+
+mongoose.connect(process.env.DATABASE);
+mongoose.connection.on('open', function (ref) { 
+  console.log('Connected to mongo server.');
+})
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
