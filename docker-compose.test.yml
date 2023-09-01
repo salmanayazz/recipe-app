@@ -10,8 +10,9 @@ services:
     hostname: mongo
 
   server:
-    build: ./server
-    restart: always
+    build: 
+      context: './server'
+      dockerfile: Dockerfile.test
     ports:
       - '3001:3000'
     volumes:
@@ -20,22 +21,6 @@ services:
     environment:
       - DATABASE=mongodb://root:example@mongo:27017
       - SESSION_SECRET=secret
+      - NODE_ENV=test
     depends_on:
       - mongo
-
-  client:
-    build: ./client
-    restart: always
-    ports:
-      - '3000:3000'
-    volumes:
-      - ./client:/usr/src/app
-      - /usr/src/app/node_modules
-
-volumes:
-  mongo_data:
-
-  
-  
-
-  

@@ -1,17 +1,20 @@
-FROM node
+FROM node:latest
 
-# app working folder
+# Create app directory
+RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-# install dependencies
-COPY package*.json ./
+# install nodemon globally
+RUN npm install nodemon -g
 
+# Install dependencies
+COPY package*.json ./
 RUN npm install
 
-# install app
-COPY . . 
+# Bundle app source
+COPY . /usr/src/app
 
+# Exports
 EXPOSE 3000
 
-# Run CMD
-CMD ["npm", "run", "start"]
+CMD ["npm", "start"]

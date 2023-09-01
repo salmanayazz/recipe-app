@@ -6,10 +6,8 @@ var should = chai.should();
 chai.use(chaiHttp);
 
 describe('recipes', function() {
-    beforeEach((done) => {
-        done();     
-    });
 
+    
     describe('GET /recipes', function() {
         it('should get all recipes on GET /recipes', function(done) {
             chai.request(server)

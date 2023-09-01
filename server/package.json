@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./src/bin/www",
-    "test": "npx mocha --exit"
+    "start": "nodemon ./src/bin/www -L",
+    "test": "npx mocha"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "bson": "^5.3.0",
     "chai": "^4.3.8",
     "chai-http": "^4.4.0",

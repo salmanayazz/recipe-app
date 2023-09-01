@@ -5,10 +5,11 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 const mongoose = require('mongoose');
+var session = require('express-session');
 
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var authRouter = require('./routes/auth');
 var recipesRouter = require('./routes/recipes');
 
 var app = express();
@@ -24,14 +25,25 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
-mongoose.connect(process.env.DATABASE);
-mongoose.connection.on('open', function (ref) { 
-  console.log('Connected to mongo server.');
-})
+// expect test config to connect to test database
+if (process.env.NODE_ENV !== 'test') {
+  mongoose.connect(process.env.DATABASE);
+  console.log(process.env.DATABASE);
+  mongoose.connection.on('open', function (ref) { 
+    console.log('Connected to mongo server.');
+  })
+}
 
+app.use(session({
+  name: 'session',
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  maxAge: 30*60*1000
+}))
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/auth', authRouter);
 app.use ('/recipes', recipesRouter);
 
 // catch 404 and forward to error handler
