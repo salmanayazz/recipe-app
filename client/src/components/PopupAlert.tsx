@@ -6,7 +6,7 @@ import Header2 from "./headers/Header2";
 import {
     selectAlert,
     clearAlert
-} from '../features/alertSlice';
+} from '../redux/alertSlice';
 
 export default function PopupAlert() {
     const dispatch = useAppDispatch();

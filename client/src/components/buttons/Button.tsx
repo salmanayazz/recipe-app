@@ -13,7 +13,9 @@ export default function Button({
         <button 
             type={type}
             onClick={onClick}
-            className="bg-pri-200 text-sec-100 py-2 px-6 rounded-md"
+            className={`bg-pri-300 text-sec-100 py-2 px-4 
+            rounded-md outline-none border-2 border-pri-300 hover:bg-pri-200 
+            transition-transform duration-200 active:translate-y-0.5`}
         >
             {element}
         </button>

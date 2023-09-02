@@ -14,7 +14,7 @@ import PopupAlert from '../components/PopupAlert';
 import {
     getRecipes,
     fetchRecipes
-} from '../features/recipesSlice';
+} from '../redux/recipesSlice';
 
 
 export default function RecipeList() {

@@ -14,7 +14,7 @@ import Paragraph from '../components/Paragraph';
 import {
     getRecipes,
     deleteRecipe
-} from '../features/recipesSlice';
+} from '../redux/recipesSlice';
 
 
 export default function RecipeDetails() {

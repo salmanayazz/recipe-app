@@ -4,6 +4,7 @@ import RecipeList from './pages/RecipeList';
 import CreateRecipe from './pages/CreateRecipe';
 import RecipeDetails from "./pages/RecipeDetails";
 import EditRecipe from "./pages/EditRecipe";
+import Auth from "./pages/Authentication";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path=":recipeId" element={<RecipeDetails />} />
           <Route path=":recipeId/edit" element={<EditRecipe />} />
         </Route>
+        <Route path="/auth" element={<Auth />} />
       </Routes>
     </Router>
   );
