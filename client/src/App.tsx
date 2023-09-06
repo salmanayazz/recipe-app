@@ -4,18 +4,21 @@ import RecipeList from './pages/RecipeList';
 import CreateRecipe from './pages/CreateRecipe';
 import RecipeDetails from "./pages/RecipeDetails";
 import EditRecipe from "./pages/EditRecipe";
-import Auth from "./pages/Authentication";
+import Authentication from "./pages/Authentication";
+import Navbar from "./components/Navbar";
+
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<RecipeList />} >
+        <Route path="/" element={<Navbar />}>
+          <Route index element={<RecipeList />} />
           <Route path="create" element={<CreateRecipe />} />
           <Route path=":recipeId" element={<RecipeDetails />} />
           <Route path=":recipeId/edit" element={<EditRecipe />} />
         </Route>
-        <Route path="/auth" element={<Auth />} />
+        <Route path="/auth" element={<Authentication />} />
       </Routes>
     </Router>
   );

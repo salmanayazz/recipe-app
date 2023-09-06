@@ -40,7 +40,7 @@ export default function TextInput({
             )}
             <div className={`flex flex-row ${hidden ? "relative" : ""}`}>
                 <input
-                    type={hidden ? (showPassword ? "text" : "password") : "text"}
+                    type={hidden ? (showPassword ? "text" : "password") : "text"} 
                     placeholder={placeholder}
                     value={textValue}
                     onChange={(e) => onChange(e.target.value)}
@@ -49,7 +49,7 @@ export default function TextInput({
                     className={`bg-pri-300 text-sec-100 outline-none border-2 ${
                         error ? "border-red-500" : "border-pri-300"
                     } rounded-md p-2 ${
-                        hidden ? "pr-10" : "pr-2" // Adjust padding for the icon
+                        hidden ? "pr-10" : "pr-2" // if hidden, add padding to the right for the eye icon
                     } focus:bg-pri-200 w-full`}
                     onKeyDown={onKeyDown}
                 />

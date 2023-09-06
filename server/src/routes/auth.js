@@ -11,7 +11,6 @@ async function getUser(req, res, next) {
     const password = req.body.password;
 
     if (!username || !password) {
-      console.log('Missing username or password')
       return res.status(400).send('Missing username or password');
     }
 

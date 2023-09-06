@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../app/store";
 import {
-  signupUser,
-  loginUser,
+  signupUserAsync,
+  loginUserAsync,
 } from "../redux/authSlice";
 
 import Header1 from "../components/headers/Header1";
@@ -29,9 +29,9 @@ export default function Authentication() {
         e.preventDefault();
 
         if (isSignUp) {
-            dispatch(signupUser(formData));
+            dispatch(signupUserAsync(formData));
         } else {
-            dispatch(loginUser(formData));
+            dispatch(loginUserAsync(formData));
         }
     };
 

@@ -20,18 +20,18 @@ import {
 export default function RecipeList() {
     const dispatch = useDispatch<AppDispatch>();
     const recipes: Recipe[] = useAppSelector(getRecipes);
+    console.log('here');
     
     useEffect(() => {
         dispatch(fetchRecipes());
     }, [dispatch]);
     
-    console.log(recipes);
     return (
         <div 
             className="flex flex-col bg-pri-100 text-sec-100 min-h-screen min-w-screen
             items-center py-2 overflow-y-auto"
         >   
-            <div
+            <div 
                 className='w-[90%] md:w-[75%]'
             >
                 <div
@@ -79,8 +79,6 @@ export default function RecipeList() {
             
             <PopupAlert />
 
-            {/* outlet to render RecipeDetails and CreateRecipe pages ontop of this page */ }
-            <Outlet />
         </div>
     );
 }

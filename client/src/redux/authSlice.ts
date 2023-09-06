@@ -2,8 +2,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk } from '../app/store';
 import axios from 'axios';
 
+export interface User {
+  username: string;
+}
+
 interface AuthState {
-  user: string | null;
+  user: User | null;
   error: string | null;
 }
 
@@ -16,8 +20,10 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<string | null>) => {
-      state.user = action.payload;
+    setUser: (state, action: PayloadAction<User | null>) => {
+      state.user = {
+        username: action.payload?.username || "unknown",
+      };
       state.error = null;
     },
     setError: (state, action: PayloadAction<string | null>) => {
@@ -47,22 +53,22 @@ export const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-// Define async thunks for API calls
-export const signupUser = (userData: { username: string; password: string }): AppThunk => async (dispatch) => {
+// async thunks for API calls
+export const signupUserAsync = (userData: { username: string; password: string }): AppThunk => async (dispatch) => {
   try {
     const response = await axiosInstance.post('/auth/signup', userData);
     dispatch(clearError());
-    dispatch(setUser(userData.username));
+    dispatch(setUser(userData)); // todo: change these to response data
   } catch (error) {
     handleApiError(error, dispatch);
   }
 };
 
-export const loginUser = (userData: { username: string; password: string }): AppThunk => async (dispatch) => {
+export const loginUserAsync = (userData: { username: string; password: string }): AppThunk => async (dispatch) => {
   try {
     const response = await axiosInstance.post('/auth/login', userData);
     dispatch(clearError());
-    dispatch(setUser(userData.username));
+    dispatch(setUser(userData));
   } catch (error) {
     handleApiError(error, dispatch);
   }
@@ -79,3 +85,5 @@ export const logoutUserAsync = (): AppThunk => async (dispatch) => {
 };
 
 export default authSlice.reducer;
+
+export const selectUser = (state: { auth: AuthState }) => state.auth.user;
