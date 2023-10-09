@@ -1,18 +1,9 @@
-import uniqid from 'uniqid';
-
 export default class Recipe {
     _id: string | undefined;
     name: string;
     ingredients: string[];
     directions: string[];
-    lastModified: string = new Date().toLocaleString(undefined, {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-    });
+    username: string;
 
     constructor(name: string, ingredients: string[], directions: string[]) {
         // extra error check
@@ -27,6 +18,7 @@ export default class Recipe {
         this.name = name;
         this.ingredients = ingredients;
         this.directions = directions;
+        this.username = ''; // handled by server
     }
 
     public static validateName(name: string): boolean {

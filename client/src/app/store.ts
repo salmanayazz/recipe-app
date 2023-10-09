@@ -1,10 +1,12 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import recipesReducer from '../features/recipesSlice';
-import alertReducer from '../features/alertSlice';
+import recipesReducer from '../redux/recipesSlice';
+import authSlice from '../redux/authSlice';
+import alertReducer from '../redux/alertSlice';
 
 export const store = configureStore({
   reducer: {
     recipes: recipesReducer,
+    auth: authSlice,
     alert: alertReducer,
   },
 });

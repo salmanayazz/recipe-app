@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    hostname: mongo
+
+  server:
+    build: 
+      context: './server'
+      dockerfile: Dockerfile.test
+    ports:
+      - '3001:3000'
+    volumes:
+      - ./server:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - DATABASE=mongodb://root:example@mongo:27017
+      - SESSION_SECRET=secret
+      - NODE_ENV=test
+    depends_on:
+      - mongo

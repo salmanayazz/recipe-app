@@ -13,7 +13,7 @@ import Recipe from '../models/Recipe';
 import {
     updateRecipe,
     getRecipes
-} from '../features/recipesSlice';
+} from '../redux/recipesSlice';
 
 
 export default function EditRecipe() {

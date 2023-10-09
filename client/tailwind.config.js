@@ -6,7 +6,8 @@ module.exports = {
       colors: {
         pri: {
           100: '#18181b',
-          200: '#202023'
+          200: '#202023',
+          300: '#28282b'
         },
         sec: {
           100: '#fafafa',
@@ -15,6 +16,9 @@ module.exports = {
         error: '#46181b',
         success: '#18461b',
       },
+      gridTemplateColumns: {
+        'auto-fit-20': 'repeat(auto-fit, minmax(20rem, 1fr))',
+      }
     },
   },
   plugins: [],

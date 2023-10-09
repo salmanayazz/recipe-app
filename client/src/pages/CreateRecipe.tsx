@@ -12,7 +12,7 @@ import Recipe from '../models/Recipe';
 
 import {
     createRecipe
-} from '../features/recipesSlice';
+} from '../redux/recipesSlice';
 
 
 

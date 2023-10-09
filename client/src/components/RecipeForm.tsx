@@ -9,7 +9,7 @@ import Header2 from "./headers/Header2";
 
 import {
     setAlert
-} from '../features/alertSlice';
+} from '../redux/alertSlice';
 
 interface RecipeFormProps {
     recipe?: Recipe
