@@ -76,9 +76,6 @@ router.post('/login', getUser, async function(req, res) {
 
 router.delete('/logout', function(req, res) {
   try {
-    if (!req.session.username) {
-      return res.status(401).send('User is not logged in');
-    }
     req.session.destroy();
     return res.status(200).send('Sucessfully logged out');
   } catch (err) {

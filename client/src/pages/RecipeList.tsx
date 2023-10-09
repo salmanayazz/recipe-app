@@ -15,12 +15,12 @@ import {
     getRecipes,
     fetchRecipes
 } from '../redux/recipesSlice';
+import Paragraph from '../components/Paragraph';
 
 
 export default function RecipeList() {
     const dispatch = useDispatch<AppDispatch>();
     const recipes: Recipe[] = useAppSelector(getRecipes);
-    console.log('here');
     
     useEffect(() => {
         dispatch(fetchRecipes());
@@ -61,10 +61,16 @@ export default function RecipeList() {
                                     key={recipe._id}
                                     to={recipe._id}
                                     className='flex items-center w-full bg-pri-200 rounded-md px-4 py-2'
-                                >
-                                    <Header2
-                                        text={recipe.name}
-                                    />
+                                >   
+                                    <div>
+                                        <Header2
+                                            text={recipe.name}
+                                        />
+                                        <Paragraph
+                                            text={recipe.username}
+                                        />
+                                    </div>
+                                    
                                 </NavLink>
                             ) : (
                                 null

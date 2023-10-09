@@ -22,11 +22,8 @@ export default function RecipeDetails() {
     const navigate = useNavigate();
 
     let { recipeId } = useParams();
-    console.log('1');
     const recipes = useAppSelector(getRecipes);
-    console.log('2');
     const recipe = recipes?.find((recipe) => recipe._id === recipeId);
-    console.log('3');
 
     function handleDelete(): void {
         if (!recipe || !recipe._id) {return}
@@ -74,7 +71,7 @@ export default function RecipeDetails() {
                         
 
                         <Paragraph
-                            text={`Last Modified: ${recipe.lastModified}`}
+                            text={`By: ${recipe.username}`}
                         />
 
                         <HorizontalLine />

@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 var recipeSchema = new mongoose.Schema({
+    user:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
     name: {
         type: String,
         required: true,
@@ -13,11 +18,7 @@ var recipeSchema = new mongoose.Schema({
     directions: {
         type: [String],
         required: true,
-    },
-    lastModified: {
-        type: Date,
-        default: Date.now,
-    },
+    }, 
 })
 
 const Recipe = mongoose.model("Recipe", recipeSchema, 'recipe');

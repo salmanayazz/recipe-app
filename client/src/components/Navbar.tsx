@@ -13,8 +13,8 @@ export default function Navbar() {
 
     return (
         <div>
-            <nav className="bg-pri-200 p-4">
-                <div className="container mx-auto flex justify-between items-center bg-pri-200">
+            <nav className="bg-pri-200 py-3">
+                <div className="mx-auto flex justify-between items-center w-[90%] md:w-[75%]">
                     <Link to="/" className="text-white text-2xl font-bold">
                         Discover
                     </Link>

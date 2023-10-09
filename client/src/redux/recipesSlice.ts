@@ -1,54 +1,49 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../app/store';
-
+import { axiosInstance } from './authSlice';
 import Recipe from '../models/Recipe';
 
-//import dotenv from 'dotenv';
-import axios from 'axios';
-//dotenv.config();
+let BACKEND = process.env.REACT_APP_BACKEND;
 
 
-let SERVER = 'http://localhost:3001'//TODO: move to .env file
 
 // async actions
 export const fetchRecipes = createAsyncThunk('recipes/fetchRecipes', async () => {
-  if (SERVER) {
-    const response = await axios.get(`${SERVER}/recipes`);
+  if (BACKEND) {
+    const response = await axiosInstance.get(`${BACKEND}/recipes`);
     console.log(response.data);
     return response.data;
   }
 });
 
 export const createRecipe = createAsyncThunk('recipes/createRecipes', async (recipeData: Recipe) => {
-  if (SERVER) {
-    const response = await axios.post(`${SERVER}/recipes`, recipeData);
+  if (BACKEND) {
+    const response = await axiosInstance.post(`${BACKEND}/recipes`, recipeData);
     return response.data;
   }
 });
 
 export const updateRecipe = createAsyncThunk('recipes/updateRecipes', async (recipeData: Recipe) => {
-  if (SERVER) {
-    const response = await axios.put(`${SERVER}/recipes/${recipeData._id}`, recipeData);
+  if (BACKEND) {
+    const response = await axiosInstance.put(`${BACKEND}/recipes/${recipeData._id}`, recipeData);
     return response.data;
   }
 });
 
 export const deleteRecipe = createAsyncThunk('recipes/deleteRecipes', async (recipeID: string) => {
-  if (SERVER) {
-    const response = await axios.delete(`${SERVER}/recipes/${recipeID}`);
+  if (BACKEND) {
+    const response = await axiosInstance.delete(`${BACKEND}/recipes/${recipeID}`);
     return response.data;
   }
 });
 
 export interface RecipesState {
-  // TODO: serialized object warning occurs here, but nothing seems to be broken
   recipes: Recipe[];
   status: 'idle' | 'loading' | 'success' | 'fail';
   error: string | undefined;
 }
 
 const initialState: RecipesState = {
-  //recipes: storage.getRecipes(),
   recipes: [],
   status: 'idle',
   error: undefined
