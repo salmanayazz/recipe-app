@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./src/bin/www -L",
+    "start": "nodemon ./src/bin/www",
     "test": "npx mocha"
   },
   "dependencies": {
