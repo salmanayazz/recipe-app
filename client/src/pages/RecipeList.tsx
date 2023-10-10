@@ -53,24 +53,12 @@ export default function RecipeList() {
                 
 
                 <div
-                    className='grid grid-cols-auto-fit-20 
-                    grid-rows-300 justify-center gap-5 my-4 w-100'
+                    className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
                 >
                     {recipes.map((recipe: Recipe) => (
-                        recipe._id ? (
-                            <NavLink 
-                                key={recipe._id}
-                                to={recipe._id}
-                                className='flex items-center bg-pri-200 rounded-md px-4 py-2'
-                            >
-                                <RecipeCard 
-                                    recipe={recipe}
-                                />
-                            </NavLink>
-                            
-                        ) : (
-                            null
-                        )
+                        <RecipeCard 
+                            recipe={recipe}
+                        />
                     ))}
                 </div>
             </div>

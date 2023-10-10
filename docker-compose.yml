@@ -20,6 +20,7 @@ services:
     environment:
       - DATABASE=mongodb://root:example@mongo:27017
       - SESSION_SECRET=secret
+      - FRONTEND_URL=http://localhost:3000
     depends_on:
       - mongo
 
