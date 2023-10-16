@@ -31,14 +31,14 @@ export default function TextInput({
     };
 
     return (
-        <div className="flex flex-col relative">
+        <div className="flex flex-1 flex-col relative">
             {label && (
                 <label className="text-sec-100 mb-1">
                     {label}
                     {required && <span className="text-red-500"> *</span>}
                 </label>
             )}
-            <div className={`flex flex-row ${hidden ? "relative" : ""}`}>
+            <div className={`flex flex-1 flex-row ${hidden ? "relative" : ""}`}>
                 <input
                     type={hidden ? (showPassword ? "text" : "password") : "text"} 
                     placeholder={placeholder}
@@ -48,7 +48,7 @@ export default function TextInput({
                     autoComplete="off"
                     className={`bg-pri-300 text-sec-100 outline-none border-2 ${
                         error ? "border-red-500" : "border-pri-300"
-                    } rounded-md p-2 ${
+                    } rounded-md p-1.5 ${
                         hidden ? "pr-10" : "pr-2" // if hidden, add padding to the right for the eye icon
                     } focus:bg-pri-200 w-full`}
                     onKeyDown={onKeyDown}
