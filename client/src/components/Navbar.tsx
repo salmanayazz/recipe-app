@@ -20,25 +20,23 @@ export default function Navbar() {
                     </Link>
                     <div className="flex space-x-4">
                         <Search />
-                        {user ? (
-
-                            <Dropdown
-                                items={[{
-                                    element: <><FiLogOut /><Paragraph text="Logout" /></>,
-                                    onClick: () => {
-                                        logoutUser();
-                                    },
-                                },
-                                ]}
-                                triggerElement={<><FiUser /><Paragraph text={user.username} /></>}
-                            />
+                        {state.loading ? (
+                            <div className='flex justify-center items-center gap-3'>
+                                <FiUser />
+                                <LoadingAnimation />
+                            </div>
                         ) : (
-                            state.loading ? (
-                                <div className='flex justify-center items-center gap-3'>
-                                    <FiUser />
-                                    <LoadingAnimation />
-                                </div>
-                                
+                            user ? (
+                                <Dropdown
+                                    items={[{
+                                        element: <><FiLogOut /><Paragraph text="Logout" /></>,
+                                        onClick: () => {
+                                            logoutUser();
+                                        },
+                                    },
+                                    ]}
+                                    triggerElement={<><FiUser /><Paragraph text={user.username} /></>}
+                                />
                             ) : (
                                 <Link to="/auth" className="flex items-center gap-1 text-sec-200 font-bold">
                                     Login

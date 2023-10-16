@@ -76,6 +76,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const getUser = async () => {
         try {
+            setState({ ...state, loading: true });
             const response = await axiosInstance.get(`${process.env.REACT_APP_BACKEND}/auth/login`);
             setState({ ...state, user: response.data.user, loading: false });
         } catch (error) {
