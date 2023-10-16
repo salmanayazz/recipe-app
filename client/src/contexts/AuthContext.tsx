@@ -8,6 +8,7 @@ export interface User {
 
 interface AuthState {
     user: User | undefined;
+    loading: boolean;
 }
 
 interface AuthContextType {
@@ -37,7 +38,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const [state, setState] = useState<AuthState>({ user: undefined });
+    const [state, setState] = useState<AuthState>({ user: undefined, loading: false });
 
     useEffect(() => {
         getUser();
@@ -45,6 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const signupUser = async (userData: { username: string; password: string }) => {
         try {
+            setState({ ...state, loading: true });
             await axiosInstance.post(`${process.env.REACT_APP_BACKEND}/auth/signup`, userData);
             getUser();
         } catch (error) {
@@ -54,8 +56,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const loginUser = async (userData: { username: string; password: string }) => {
         try {
+            setState({ ...state, loading: true });
             let response = await axiosInstance.post(`${process.env.REACT_APP_BACKEND}/auth/login`, userData);
-            setState({ ...state, user: response.data.user });
+            setState({ ...state, user: response.data.user, loading: false });
         } catch (error) {
             console.log(error);
         }
@@ -63,8 +66,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const logoutUser = async () => {
         try {
+            setState({ ...state, loading: true });
             await axiosInstance.delete(`${process.env.REACT_APP_BACKEND}/auth/logout`);
-            setState({ ...state, user: undefined });
+            setState({ ...state, user: undefined, loading: false });
         } catch (error) {
             console.log(error);
         }
@@ -73,7 +77,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const getUser = async () => {
         try {
             const response = await axiosInstance.get(`${process.env.REACT_APP_BACKEND}/auth/login`);
-            setState({ ...state, user: response.data.user });
+            setState({ ...state, user: response.data.user, loading: false });
         } catch (error) {
             console.log(error);
         }

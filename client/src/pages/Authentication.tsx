@@ -71,8 +71,9 @@ export default function Authentication() {
 
                 <div className="flex py-3 flex-col">
                     <Button
-                    type="submit"
-                    element={isSignUp ? "Sign Up" : "Log In"}
+                        type="submit"
+                        element={isSignUp ? "Sign Up" : "Log In"}
+                        loading={state.loading}
                     />
                 </div>
             </form>
