@@ -8,20 +8,19 @@ import Header1 from '../components/headers/Header1';
 import HorizontalLine from '../components/HorizontalLine';
 import RecipeForm from '../components/RecipeForm';
 
-import Recipe from '../models/Recipe';
+import { Recipe } from '../contexts/RecipesContext';
 
-import {
-    updateRecipe,
-    getRecipes
-} from '../redux/recipesSlice';
+import { useRecipes } from '../contexts/RecipesContext';
 
 
 export default function EditRecipe() {
     let { recipeId } = useParams();
-    const recipes: Recipe[] = useAppSelector(getRecipes);
+
+    const { state, updateRecipe } = useRecipes();
+
+    const recipes: Recipe[] = state.recipes;
     const recipe: Recipe | undefined = recipes.find((recipe) => recipe._id === recipeId);
     
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const [name, setName] = useState<string>((recipe ? recipe.name : ''));
@@ -30,7 +29,9 @@ export default function EditRecipe() {
 
     function afterSubmit(newRecipe: Recipe) {
         try {
-            dispatch(updateRecipe(newRecipe));
+            if (recipe) {
+                updateRecipe(recipe._id, newRecipe);
+            }
         } catch(e) {
             console.log(e);
             return;

@@ -1,15 +1,9 @@
-import { useAppDispatch } from '../app/hooks';
-
-import Recipe from "../models/Recipe";
+import { Recipe } from '../contexts/RecipesContext';
 
 import DynamicInputList, { TextValue } from "./DynamicInputList";
 import TextInput from "./TextInput";
 import Button from "./buttons/Button";
 import Header2 from "./headers/Header2";
-
-import {
-    setAlert
-} from '../redux/alertSlice';
 
 interface RecipeFormProps {
     recipe?: Recipe
@@ -32,40 +26,20 @@ export default function RecipeForm({
     setDirections,
     afterSubmit
 }: RecipeFormProps) {
-    const dispatch = useAppDispatch();
-
+    
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
         let ingredientValues: string[] = removeEmpty(ingredients.map((ingredient) => ingredient.value));
         let directionValues: string[] = removeEmpty(directions.map((direction) => direction.value));
 
-        let newRecipe;
-        try {
-            newRecipe = new Recipe(name, ingredientValues, directionValues);
-        } 
-        catch(e) {
-            if (e instanceof Error) {
-                dispatch(
-                    setAlert({
-                        text: e.message, 
-                        alertType: 'error',
-                    })
-                );
-            } else {
-                dispatch(
-                    setAlert({
-                        text: undefined, 
-                        alertType: 'error',
-                    })
-                );
-            }
-            return;
-        } 
-
-        // if a recipe param was passed, use its id in the new one
-        if (recipe) {
-            newRecipe._id = recipe._id
+        
+        let newRecipe: Recipe = {
+            _id: '', // handled by backend
+            username: '',
+            name: name,
+            ingredients: ingredientValues,
+            directions: directionValues
         }
         
         afterSubmit(newRecipe);

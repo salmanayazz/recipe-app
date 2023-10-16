@@ -10,14 +10,14 @@ export interface Recipe {
 }
 
 interface RecipesState {
-    recipes?: Recipe[];
+    recipes: Recipe[];
 }
 
 interface RecipesContextType {
     state: RecipesState;
     fetchRecipes: (searchParams?: SearchParams) => void;
     createRecipe: (recipe: Recipe) => void;
-    updateRecipe: (recipe: Recipe) => void;
+    updateRecipe: (recipeID: string, recipe: Recipe) => void;
     deleteRecipe: (recipeId: string) => void;
 }
 
@@ -69,9 +69,9 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
         }
     }
 
-    const updateRecipe = async (recipe: Recipe) => {
+    const updateRecipe = async (recipeID: string, recipe: Recipe) => {
         try {
-            await axiosInstance.put(`${process.env.REACT_APP_BACKEND}/recipes/${recipe._id}`, recipe);
+            await axiosInstance.put(`${process.env.REACT_APP_BACKEND}/recipes/${recipeID}`, recipe);
         } catch (error) {
             console.log(error);
         }

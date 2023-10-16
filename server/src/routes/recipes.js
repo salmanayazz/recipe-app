@@ -42,6 +42,12 @@ router.get('/', async function(req, res) {
 
 router.post('/', checkAuthenticated, async function(req, res) {
     try {
+
+        let body = req.body;
+        // prevent user from setting the _id
+        body['_id'] = undefined;
+
+
         const recipe = await Recipe.create({
             ...req.body,
             username:  req.session.username,

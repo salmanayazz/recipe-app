@@ -8,11 +8,8 @@ import Header1 from '../components/headers/Header1';
 import HorizontalLine from '../components/HorizontalLine';
 import RecipeForm from '../components/RecipeForm';
 
-import Recipe from '../models/Recipe';
-
-import {
-    createRecipe
-} from '../redux/recipesSlice';
+import { Recipe } from '../contexts/RecipesContext';
+import { useRecipes } from '../contexts/RecipesContext';
 
 
 
@@ -20,13 +17,15 @@ export default function CreateRecipe() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
+    const { createRecipe } = useRecipes();
+
     const [name, setName] = useState<string>('');
     const [ingredients, setIngredients] = useState<TextValue[]>([new TextValue("")]);
     const [directions, setDirections] = useState<TextValue[]>([new TextValue("")]);
 
     function afterSubmit(recipe: Recipe) {
         try {
-            dispatch(createRecipe(recipe));
+            createRecipe(recipe);
         } catch(e) {
             console.log(e);
             return;
