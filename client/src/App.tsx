@@ -7,22 +7,26 @@ import EditRecipe from "./pages/EditRecipe";
 import Authentication from "./pages/Authentication";
 import Navbar from "./components/Navbar";
 import { RecipesProvider } from "./contexts/RecipesContext";
+import AuthProvider from "./contexts/AuthContext";
 
 
 function App() {
   return (
     <RecipesProvider>
+      <AuthProvider>
       <Router>
         <Routes>
           <Route path="/" element={<Navbar />}>
-            <Route index element={<RecipeList />} />
+            <Route path="/" element={<RecipeList />} >
             <Route path="create" element={<CreateRecipe />} />
             <Route path=":recipeId" element={<RecipeDetails />} />
             <Route path=":recipeId/edit" element={<EditRecipe />} />
+            </Route>
           </Route>
           <Route path="/auth" element={<Authentication />} />
         </Routes>
       </Router>
+      </AuthProvider>
     </RecipesProvider>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, createContext, ReactNode, useContext } from 'react';
-import { axiosInstance } from '../redux/authSlice';
+import { axiosInstance } from '../contexts/AuthContext';
 
 export interface Recipe {
     _id: string;
@@ -72,6 +72,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
     const updateRecipe = async (recipeID: string, recipe: Recipe) => {
         try {
             await axiosInstance.put(`${process.env.REACT_APP_BACKEND}/recipes/${recipeID}`, recipe);
+            fetchRecipes();
         } catch (error) {
             console.log(error);
         }

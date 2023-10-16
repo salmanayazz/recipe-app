@@ -5,7 +5,6 @@ import AddButton from '../components/buttons/AddButton';
 import { Recipe } from '../contexts/RecipesContext';
 import Header1 from '../components/headers/Header1';
 import HorizontalLine from '../components/HorizontalLine';
-import PopupAlert from '../components/PopupAlert';
 import RecipeCard from '../components/RecipeCard';
 
 import { useRecipes } from '../contexts/RecipesContext';
@@ -49,14 +48,18 @@ export default function RecipeList() {
                     className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
                 >
                     {recipes?.map((recipe: Recipe) => (
-                        <RecipeCard 
-                            recipe={recipe}
-                        />
+                        <div
+                            key={recipe._id}
+                        >
+                            <RecipeCard 
+                                recipe={recipe}
+                            />
+                        </div>    
                     ))}
                 </div>
             </div>
             
-            <PopupAlert />
+            <Outlet />
             
         </div>
     );

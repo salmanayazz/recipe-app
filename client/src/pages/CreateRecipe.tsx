@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useAppDispatch } from '../app/hooks';
 import { useNavigate } from 'react-router-dom';
 
 import { TextValue } from '../components/DynamicInputList';
@@ -14,7 +13,6 @@ import { useRecipes } from '../contexts/RecipesContext';
 
 
 export default function CreateRecipe() {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const { createRecipe } = useRecipes();

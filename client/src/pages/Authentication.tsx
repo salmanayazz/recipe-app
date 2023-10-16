@@ -1,10 +1,6 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../app/store";
-import {
-  signupUserAsync,
-  loginUserAsync,
-} from "../redux/authSlice";
+import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../contexts/AuthContext";
 
 import Header1 from "../components/headers/Header1";
 import TextInput from "../components/TextInput";
@@ -13,13 +9,21 @@ import Button from "../components/buttons/Button";
 
 
 export default function Authentication() {
+    const { state, signupUser, loginUser } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (state.user) {
+            // redirect to home page if already logged in
+            navigate('/');
+        }
+    }, [state.user, navigate]);
+
     const [isSignUp, setIsSignUp] = useState(false);
     const [formData, setFormData] = useState({
         username: "",
         password: "",
     });
-
-    const dispatch: AppDispatch = useDispatch();
 
     const toggleForm = () => {
         setIsSignUp(!isSignUp);
@@ -29,9 +33,9 @@ export default function Authentication() {
         e.preventDefault();
 
         if (isSignUp) {
-            dispatch(signupUserAsync(formData));
+            signupUser(formData);
         } else {
-            dispatch(loginUserAsync(formData));
+            loginUser(formData);
         }
     };
 

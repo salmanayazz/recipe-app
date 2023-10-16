@@ -1,16 +1,14 @@
-import { User, logoutUserAsync, selectUser } from '../redux/authSlice';
+import { User, useAuth } from '../contexts/AuthContext';
 import { Outlet } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { FiUser, FiLogOut, FiLogIn } from 'react-icons/fi';
-import { AppDispatch, RootState } from '../app/store';
 import Dropdown from './Dropdown';
 import Paragraph from './Paragraph';
 import Search from './Search';
 
 export default function Navbar() {
-    const dispatch = useDispatch<AppDispatch>();
-    const user: User | undefined = useSelector<RootState, User | undefined>(selectUser);
+    const { state, logoutUser } = useAuth();
+    const user: User | undefined = state.user;
 
     return (
         <div>
@@ -27,7 +25,7 @@ export default function Navbar() {
                                 items={[{
                                     element: <><FiLogOut /><Paragraph text="Logout" /></>,
                                     onClick: () => {
-                                        dispatch(logoutUserAsync());
+                                        logoutUser();
                                     },
                                 },
                                 ]}
