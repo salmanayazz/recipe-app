@@ -12,7 +12,9 @@ export default function Navbar() {
     const user: User | undefined = state.user;
 
     return (
-        <div>
+        <div
+            className='flex flex-col min-h-screen bg-pri-100 text-sec-100'
+        >
             <nav className="bg-pri-200 py-3 text-white ">
                 <div className="mx-auto flex justify-between items-center w-[90%]">
                     <Link to="/" className="text-2xl font-bold">

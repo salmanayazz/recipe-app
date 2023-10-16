@@ -21,7 +21,7 @@ export default function RecipeList() {
     
     return (
         <div 
-            className="flex flex-col bg-pri-100 text-sec-100 min-h-screen min-w-screen
+            className="flex flex-col bg-pri-100 text-sec-100
             items-center py-2 overflow-y-auto"
         >   
             <div 
@@ -58,7 +58,7 @@ export default function RecipeList() {
                     ))}
                 </div>
             </div>
-            
+
             <Outlet />
             
         </div>
