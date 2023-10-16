@@ -13,7 +13,7 @@ function checkAuthenticated(req, res, next) {
 } 
 
 router.get('/', async function(req, res) {
-    try {        
+    try {     
         // build the query based on search parameters
         const query = {};
 
@@ -22,7 +22,12 @@ router.get('/', async function(req, res) {
         }
 
         if (req.query.recipeName) {
-            query.name = req.query.recipeName;
+            console.log(req.params.recipeName);
+            // substring search
+            query.name = {
+                $regex: req.query.recipeName,
+                $options: 'i',
+            };
         }
         if (req.query.ingredients) {
             query.ingredients = req.query.ingredients;

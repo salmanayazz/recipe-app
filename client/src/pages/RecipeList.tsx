@@ -1,31 +1,24 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../app/hooks';
 import { useEffect } from 'react';
-import { AppDispatch } from '../app/store';
 
 import AddButton from '../components/buttons/AddButton';
 import Recipe from '../models/Recipe';
-import Header2 from '../components/headers/Header2';
 import Header1 from '../components/headers/Header1';
 import HorizontalLine from '../components/HorizontalLine';
 import PopupAlert from '../components/PopupAlert';
 import RecipeCard from '../components/RecipeCard';
 
-import {
-    getRecipes,
-    fetchRecipes
-} from '../redux/recipesSlice';
+import { useRecipes } from '../contexts/RecipesContext';
 
 
 
 export default function RecipeList() {
-    const dispatch = useDispatch<AppDispatch>();
-    const recipes: Recipe[] = useAppSelector(getRecipes);
+    const { state, fetchRecipes } = useRecipes();
+    const recipes: Recipe[] | undefined = state.recipes;
     
     useEffect(() => {
-        dispatch(fetchRecipes());
-    }, [dispatch]);
+        fetchRecipes()
+    }, []);
     
     return (
         <div 
@@ -33,7 +26,7 @@ export default function RecipeList() {
             items-center py-2 overflow-y-auto"
         >   
             <div 
-                className='w-[90%] md:w-[75%]'
+                className='w-[90%]'
             >
                 <div
                     className='flex items-center gap-4'
@@ -55,7 +48,7 @@ export default function RecipeList() {
                 <div
                     className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
                 >
-                    {recipes.map((recipe: Recipe) => (
+                    {recipes?.map((recipe: Recipe) => (
                         <RecipeCard 
                             recipe={recipe}
                         />
@@ -64,7 +57,7 @@ export default function RecipeList() {
             </div>
             
             <PopupAlert />
-
+            
         </div>
     );
 }

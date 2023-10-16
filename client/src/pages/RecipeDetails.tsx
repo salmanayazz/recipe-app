@@ -1,6 +1,4 @@
 import { useParams, NavLink, useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { useEffect } from 'react';
 
 import PopupWindow from '../components/PopupWindow';
 import Header1 from '../components/headers/Header1';
@@ -11,24 +9,21 @@ import EditButton from '../components/buttons/EditButton'
 import DeleteButton from '../components/buttons/DeleteButton'
 import Paragraph from '../components/Paragraph';
 
-import {
-    getRecipes,
-    deleteRecipe
-} from '../redux/recipesSlice';
+import { useRecipes } from '../contexts/RecipesContext';
 
 
 export default function RecipeDetails() {
-    const dispatch = useAppDispatch();
+    const { state, deleteRecipe } = useRecipes();
     const navigate = useNavigate();
 
     let { recipeId } = useParams();
-    const recipes = useAppSelector(getRecipes);
+    const recipes = state.recipes;
     const recipe = recipes?.find((recipe) => recipe._id === recipeId);
 
     function handleDelete(): void {
         if (!recipe || !recipe._id) {return}
         try {
-            dispatch(deleteRecipe(recipe._id));
+            deleteRecipe(recipe._id);
         } catch(e) {
             console.log(e);
             return;

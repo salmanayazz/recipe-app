@@ -6,6 +6,7 @@ import { FiUser, FiLogOut, FiLogIn } from 'react-icons/fi';
 import { AppDispatch, RootState } from '../app/store';
 import Dropdown from './Dropdown';
 import Paragraph from './Paragraph';
+import Search from './Search';
 
 export default function Navbar() {
     const dispatch = useDispatch<AppDispatch>();
@@ -14,11 +15,12 @@ export default function Navbar() {
     return (
         <div>
             <nav className="bg-pri-200 py-3">
-                <div className="mx-auto flex justify-between items-center w-[90%] md:w-[75%]">
+                <div className="mx-auto flex justify-between items-center w-[90%]">
                     <Link to="/" className="text-white text-2xl font-bold">
                         Discover
                     </Link>
-                    <div className="space-x-4">
+                    <div className="flex space-x-4">
+                        <Search />
                         {user ? (
 
                             <Dropdown

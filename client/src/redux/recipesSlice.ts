@@ -3,9 +3,29 @@ import { RootState } from '../app/store';
 import { axiosInstance } from './authSlice';
 import Recipe from '../models/Recipe';
 
+export interface RecipesState {
+  recipes: Recipe[];
+  status: 'idle' | 'loading' | 'success' | 'fail';
+  error: string | undefined;
+  searchParams: {
+    username: string | undefined;
+    recipeName: string | undefined;
+    ingredients: string | undefined;
+  };
+}
+
+const initialState: RecipesState = {
+  recipes: [],
+  status: 'idle',
+  error: undefined,
+  searchParams: {
+    username: undefined,
+    recipeName: undefined,
+    ingredients: undefined,
+  },
+};
+
 let BACKEND = process.env.REACT_APP_BACKEND;
-
-
 
 // async actions
 export const fetchRecipes = createAsyncThunk('recipes/fetchRecipes', async () => {
@@ -37,22 +57,16 @@ export const deleteRecipe = createAsyncThunk('recipes/deleteRecipes', async (rec
   }
 });
 
-export interface RecipesState {
-  recipes: Recipe[];
-  status: 'idle' | 'loading' | 'success' | 'fail';
-  error: string | undefined;
-}
-
-const initialState: RecipesState = {
-  recipes: [],
-  status: 'idle',
-  error: undefined
-};
-
 export const recipesSlice = createSlice({
   name: 'recipes',
   initialState,
   reducers: {
+    setSearchParams: (state, action) => {
+      // set current searchParams to undefined 
+    // TODO: this is not working
+      state.searchParams = { ...action.payload };
+      console.log(state.searchParams);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -93,6 +107,8 @@ export const recipesSlice = createSlice({
   },
 });
 
+
+export const { setSearchParams } = recipesSlice.actions;
 export const getRecipes = (state: RootState) => state.recipes.recipes;
 
 export default recipesSlice.reducer;
