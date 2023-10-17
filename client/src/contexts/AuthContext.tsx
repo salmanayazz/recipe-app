@@ -58,9 +58,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
             setState({ ...state, loading: true });
             let response = await axiosInstance.post(`${process.env.REACT_APP_BACKEND}/auth/login`, userData);
-            setState({ ...state, user: response.data.user, loading: false });
+            setState({ ...state, user: response.data.user });
         } catch (error) {
             console.log(error);
+        } finally {
+            setState({ ...state, loading: false });
         }
     }
 
@@ -68,9 +70,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
             setState({ ...state, loading: true });
             await axiosInstance.delete(`${process.env.REACT_APP_BACKEND}/auth/logout`);
-            setState({ ...state, user: undefined, loading: false });
         } catch (error) {
             console.log(error);
+        } finally {
+            setState({ ...state, user: undefined, loading: false });
         }
     }
 
@@ -78,9 +81,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
             setState({ ...state, loading: true });
             const response = await axiosInstance.get(`${process.env.REACT_APP_BACKEND}/auth/login`);
-            setState({ ...state, user: response.data.user, loading: false });
+            setState({ ...state, user: response.data.user});
         } catch (error) {
             console.log(error);
+        } finally {
+            setState({ ...state, loading: false });
         }
     }
 
