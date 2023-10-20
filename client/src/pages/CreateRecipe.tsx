@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useAppDispatch } from '../app/hooks';
 import { useNavigate } from 'react-router-dom';
 
 import { TextValue } from '../components/DynamicInputList';
@@ -8,17 +7,15 @@ import Header1 from '../components/headers/Header1';
 import HorizontalLine from '../components/HorizontalLine';
 import RecipeForm from '../components/RecipeForm';
 
-import Recipe from '../models/Recipe';
-
-import {
-    createRecipe
-} from '../redux/recipesSlice';
+import { Recipe } from '../contexts/RecipesContext';
+import { useRecipes } from '../contexts/RecipesContext';
 
 
 
 export default function CreateRecipe() {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
+
+    const { createRecipe } = useRecipes();
 
     const [name, setName] = useState<string>('');
     const [ingredients, setIngredients] = useState<TextValue[]>([new TextValue("")]);
@@ -26,7 +23,7 @@ export default function CreateRecipe() {
 
     function afterSubmit(recipe: Recipe) {
         try {
-            dispatch(createRecipe(recipe));
+            createRecipe(recipe);
         } catch(e) {
             console.log(e);
             return;

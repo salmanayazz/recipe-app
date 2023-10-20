@@ -67,7 +67,20 @@ router.post('/login', getUser, async function(req, res) {
     
     req.session.username = username;
 
-    return res.status(200).send('Sucessfully logged in');
+    return res.status(200).json({user: {username: req.session.username}});
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send('Internal server error');
+  }
+});
+
+router.get('/login', function(req, res) {
+  try {
+    if (req.session.username) {
+      return res.status(200).json({user: {username: req.session.username}});
+    } else {
+      return res.status(401).send('Unauthorized');
+    }
   } catch (err) {
     console.log(err);
     return res.status(500).send('Internal server error');

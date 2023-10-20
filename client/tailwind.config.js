@@ -16,9 +16,6 @@ module.exports = {
         error: '#46181b',
         success: '#18461b',
       },
-      gridTemplateColumns: {
-        'auto-fit-20': 'repeat(auto-fit, minmax(20rem, 1fr))',
-      }
     },
   },
   plugins: [],

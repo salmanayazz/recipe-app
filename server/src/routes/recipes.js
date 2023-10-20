@@ -3,10 +3,8 @@ var router = express.Router();
 require('dotenv').config();
 
 const Recipe = require('../models/Recipe');
-const Ingredient = require('../models/Ingredient');
 
 function checkAuthenticated(req, res, next) {
-    console.log(req.session);
     if (req.session && req.session.username) {
         return next();
     }
@@ -14,26 +12,28 @@ function checkAuthenticated(req, res, next) {
     res.status(401).send('Unauthorized');
 } 
 
-async function getRecipesWithIngredientNames() {
-    const recipes = await Recipe.find();
-    // replace ingredient _id with ingredient name
-    const recipesWithNames = await Promise.all(recipes.map(async (recipe) => {
-        const ingredients = await Promise.all(recipe.ingredients.map(async (ingredient) => {
-            const ingredientName = await Ingredient.findById(ingredient);
-            return ingredientName.name;
-        }));
-        return {
-            ...recipe._doc,
-            ingredients,
-        };
-    }));
-    return recipesWithNames;
-}
-
-
 router.get('/', async function(req, res) {
-    try {        
-        res.json(await getRecipesWithIngredientNames());
+    try {     
+        // build the query based on search parameters
+        const query = {};
+
+        if (req.query.username) {
+            query.username = req.query.username;
+        }
+
+        if (req.query.recipeName) {
+            console.log(req.params.recipeName);
+            // substring search
+            query.name = {
+                $regex: req.query.recipeName,
+                $options: 'i',
+            };
+        }
+        if (req.query.ingredients) {
+            query.ingredients = req.query.ingredients;
+        }
+
+        res.json(await Recipe.find(query).limit(20));
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
@@ -43,30 +43,17 @@ router.get('/', async function(req, res) {
 router.post('/', checkAuthenticated, async function(req, res) {
     try {
 
-        const ingredients = req.body.ingredients;
-    
-        // Create an array to store the ingredient references
-        const ingredientRefs = [];
-    
-        // Iterate over the ingredients and create them if they don't exist
-        for (const ingredientName of ingredients) {
-            let ingredient = await Ingredient.findOne({ name: ingredientName });
-        
-            if (!ingredient) {
-                ingredient = await Ingredient.create({ name: ingredientName });
-            }
-        
-            ingredientRefs.push(ingredient._id);
-        }
-    
-        // Create the recipe
+        let body = req.body;
+        // prevent user from setting the _id
+        body['_id'] = undefined;
+
+
         const recipe = await Recipe.create({
             ...req.body,
             username:  req.session.username,
-            ingredients: ingredientRefs,
         });
     
-        res.json(await getRecipesWithIngredientNames());
+        res.json(await Recipe.find({}).limit(20));
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
@@ -75,30 +62,15 @@ router.post('/', checkAuthenticated, async function(req, res) {
 
 router.put('/:recipeID', checkAuthenticated, async function(req, res) {
     try {
-        const { name, ingredients, directions, lastModified } = req.body;
-    
-        // Create an array to store the ingredient references
-        const ingredientRefs = [];
-    
-        // Iterate over the ingredients and create them if they don't exist
-        for (const ingredientName of ingredients) {
-            let ingredient = await Ingredient.findOne({ name: ingredientName });
-        
-            if (!ingredient) {
-                ingredient = await Ingredient.create({ name: ingredientName });
-            }
-        
-            ingredientRefs.push(ingredient._id);
-        }
+        const { name, ingredients, directions } = req.body;
     
         const recipe = await Recipe.findByIdAndUpdate({
             _id: req.params.recipeID,
             username: req.session.username,
         }, {
                 name,
-                ingredients: ingredientRefs,
-                directions,
-                lastModified
+                ingredients: ingredients,
+                directions
             },
             { new: true }
         );
@@ -107,7 +79,7 @@ router.put('/:recipeID', checkAuthenticated, async function(req, res) {
             return res.status(404).json({ message: 'Recipe not found' });
         }
     
-        res.json(await getRecipesWithIngredientNames());
+        res.json(await Recipe.find({}).limit(20));
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
@@ -125,7 +97,7 @@ router.delete('/:recipeID', checkAuthenticated, async function(req, res) {
             return res.status(404).json({ message: 'Recipe not found' });
         }
 
-        res.json(await getRecipesWithIngredientNames());
+        res.json(await Recipe.find({}).limit(20));
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });

@@ -1,90 +1,59 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../app/hooks';
 import { useEffect } from 'react';
-import { AppDispatch } from '../app/store';
 
 import AddButton from '../components/buttons/AddButton';
-import Recipe from '../models/Recipe';
-import Header2 from '../components/headers/Header2';
+import { Recipe } from '../contexts/RecipesContext';
 import Header1 from '../components/headers/Header1';
 import HorizontalLine from '../components/HorizontalLine';
-import PopupAlert from '../components/PopupAlert';
+import RecipeCard from '../components/RecipeCard';
 
-import {
-    getRecipes,
-    fetchRecipes
-} from '../redux/recipesSlice';
-import Paragraph from '../components/Paragraph';
+import { useRecipes } from '../contexts/RecipesContext';
+
 
 
 export default function RecipeList() {
-    const dispatch = useDispatch<AppDispatch>();
-    const recipes: Recipe[] = useAppSelector(getRecipes);
+    const { state, fetchRecipes } = useRecipes();
+    const recipes: Recipe[] | undefined = state.recipes;
     
     useEffect(() => {
-        dispatch(fetchRecipes());
-    }, [dispatch]);
+        fetchRecipes()
+    }, []);
     
     return (
         <div 
-            className="flex flex-col bg-pri-100 text-sec-100 min-h-screen min-w-screen
+            className="flex flex-col bg-pri-100 text-sec-100
             items-center py-2 overflow-y-auto"
         >   
             <div 
-                className='w-[90%] md:w-[75%]'
+                className='w-[90%]'
             >
                 <div
                     className='flex items-center gap-4'
                 >
                     <Header1
-                        text='Saved Recipes'
+                        text='Discover Your Next Meal'
                     />
-
-                    <NavLink 
-                        to="create"
-                        className='flex justify-center items-center'
-                    >
-                        <AddButton />
-                    </NavLink>
                 </div>
                 <HorizontalLine />
                 
 
                 <div
-                    className='flex flex-col justify-center items-center gap-5 my-4'
+                    className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
                 >
-                    { recipes ? (
-                        recipes.map((recipe: Recipe) => (
-                            recipe._id ? (
-                                <NavLink 
-                                    key={recipe._id}
-                                    to={recipe._id}
-                                    className='flex items-center w-full bg-pri-200 rounded-md px-4 py-2'
-                                >   
-                                    <div>
-                                        <Header2
-                                            text={recipe.name}
-                                        />
-                                        <Paragraph
-                                            text={recipe.username}
-                                        />
-                                    </div>
-                                    
-                                </NavLink>
-                            ) : (
-                                null
-                            )
-                        ))
-                        ) : (
-                            null
-                        )
-                    }
+                    {recipes?.map((recipe: Recipe) => (
+                        <div
+                            key={recipe._id}
+                        >
+                            <RecipeCard 
+                                recipe={recipe}
+                            />
+                        </div>    
+                    ))}
                 </div>
             </div>
-            
-            <PopupAlert />
 
+            <Outlet />
+            
         </div>
     );
 }

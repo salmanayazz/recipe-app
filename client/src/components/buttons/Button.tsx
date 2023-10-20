@@ -1,14 +1,21 @@
+import { useEffect, useState } from "react";
+import LoadingAnimation from "../LoadingAnimation";
+
 interface ButtonProps {
     element: string | JSX.Element;
     type?: "button" | "submit" | "reset" | undefined;
     onClick?: () => void;
+    loading?: boolean;
 }
 
 export default function Button({
     type = "button",
     element,
-    onClick
+    onClick,
+    loading = false,
 }: ButtonProps ) {
+    
+
     return (
         <button 
             type={type}
@@ -16,8 +23,12 @@ export default function Button({
             className={`bg-pri-300 text-sec-100 py-2 px-4 
             rounded-md outline-none border-2 border-pri-300 hover:bg-pri-200 
             transition-transform duration-200 active:translate-y-0.5`}
-        >
-            {element}
+        >   
+        { loading ? (
+            <LoadingAnimation />
+        ) : (
+            element
+        )} 
         </button>
     );
 }

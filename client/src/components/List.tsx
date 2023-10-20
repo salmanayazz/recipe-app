@@ -19,7 +19,9 @@ export default function List({
                         className="flex gap-2 w-full ml-2 text-sec-200"
                     >
                         
-                        <div>
+                        <div
+                            className="flex justify-center items-center"
+                        >
                             {isOrdered ? (`${index + 1}.`) : ('●')}
                         </div>
                         {(typeof value === 'string') ? (
