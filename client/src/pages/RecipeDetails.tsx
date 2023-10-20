@@ -49,18 +49,20 @@ export default function RecipeDetails() {
                             <div
                                 className='flex items-center gap-4'    
                             >
-                                <NavLink
-                                    to='edit'
-                                    className='flex justify-center items-center'
-                                >
-                                    <EditButton/>
-                                </NavLink>
+                                {/* only show edit and delete buttons if user owns it */}
+                                recipe.username === state.user?.username && ( 
+                                    <NavLink
+                                        to='edit'
+                                        className='flex justify-center items-center'
+                                    >
+                                        <EditButton/>
+                                    </NavLink>
 
-                                <DeleteButton 
-                                    onClick={handleDelete}
-                                />
+                                    <DeleteButton 
+                                        onClick={handleDelete}
+                                    />
+                                )
                             </div>
-                            
                             
                         </div>
                         

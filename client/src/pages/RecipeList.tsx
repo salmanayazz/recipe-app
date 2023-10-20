@@ -31,15 +31,8 @@ export default function RecipeList() {
                     className='flex items-center gap-4'
                 >
                     <Header1
-                        text='Saved Recipes'
+                        text='Discover Your Next Meal'
                     />
-
-                    <NavLink 
-                        to="create"
-                        className='flex justify-center items-center'
-                    >
-                        <AddButton />
-                    </NavLink>
                 </div>
                 <HorizontalLine />
                 
