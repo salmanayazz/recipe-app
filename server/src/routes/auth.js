@@ -38,8 +38,7 @@ router.post('/signup', getUser, async function(req, res) {
 
     await User.create({
       username: username,
-      password: hashedPassword,
-      salt: salt,
+      password: hashedPassword
     });
 
     req.session.username = username;

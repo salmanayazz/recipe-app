@@ -10,10 +10,6 @@ var userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    salt: {
-        type: String,
-        required: true,
-    },
 })
 
 const User = mongoose.model("User", userSchema, 'user');
