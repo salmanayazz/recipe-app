@@ -14,7 +14,7 @@ interface RecipesState {
 }
 
 interface RecipesContextType {
-    state: RecipesState;
+    recipeState: RecipesState;
     fetchRecipes: (searchParams?: SearchParams) => void;
     createRecipe: (recipe: Recipe) => void;
     updateRecipe: (recipeID: string, recipe: Recipe) => void;
@@ -45,7 +45,7 @@ interface RecipesProviderProps {
 }
 
 export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) => {
-    const [state, setState] = useState<RecipesState>(defaultRecipesState);
+    const [recipeState, setRecipeState] = useState<RecipesState>(defaultRecipesState);
 
     const fetchRecipes = async (searchParams?: SearchParams) => {
         try {
@@ -54,7 +54,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
                     params: searchParams 
                 }
             );
-            setState({ ...state, recipes: response.data });
+            setRecipeState({ ...recipeState, recipes: response.data });
         } catch (error) {
             console.log(error);
         }
@@ -89,7 +89,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
 
     return (
         <RecipesContext.Provider value={{ 
-            state, 
+            recipeState, 
             fetchRecipes, 
             createRecipe, 
             updateRecipe, 

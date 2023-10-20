@@ -10,14 +10,16 @@ import DeleteButton from '../components/buttons/DeleteButton'
 import Paragraph from '../components/Paragraph';
 
 import { useRecipes } from '../contexts/RecipesContext';
+import { useAuth } from '../contexts/AuthContext';
 
 
 export default function RecipeDetails() {
-    const { state, deleteRecipe } = useRecipes();
+    const { authState } = useAuth();
+    const { recipeState, deleteRecipe } = useRecipes();
     const navigate = useNavigate();
 
     let { recipeId } = useParams();
-    const recipes = state.recipes;
+    const recipes = recipeState.recipes;
     const recipe = recipes?.find((recipe) => recipe._id === recipeId);
 
     function handleDelete(): void {
@@ -46,24 +48,26 @@ export default function RecipeDetails() {
                             <Header1
                                 text={recipe.name}
                             />
-                            <div
-                                className='flex items-center gap-4'    
-                            >
-                                {/* only show edit and delete buttons if user owns it */}
-                                recipe.username === state.user?.username && ( 
-                                    <NavLink
-                                        to='edit'
-                                        className='flex justify-center items-center'
-                                    >
-                                        <EditButton/>
-                                    </NavLink>
 
-                                    <DeleteButton 
-                                        onClick={handleDelete}
-                                    />
-                                )
-                            </div>
-                            
+                            {/* only show edit and delete buttons if user owns it */}
+                            {recipe.username === authState.user?.username && (
+                                <div
+                                    className='flex items-center gap-4'    
+                                >
+                                    
+                                        <NavLink
+                                            to='edit'
+                                            className='flex justify-center items-center'
+                                        >
+                                            <EditButton/>
+                                        </NavLink>
+
+                                        <DeleteButton 
+                                            onClick={handleDelete}
+                                        />
+                                    
+                                </div>
+                            )}
                         </div>
                         
 

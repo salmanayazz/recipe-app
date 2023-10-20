@@ -12,8 +12,8 @@ import { useRecipes } from '../contexts/RecipesContext';
 
 
 export default function RecipeList() {
-    const { state, fetchRecipes } = useRecipes();
-    const recipes: Recipe[] | undefined = state.recipes;
+    const { recipeState, fetchRecipes } = useRecipes();
+    const recipes: Recipe[] | undefined = recipeState.recipes;
     
     useEffect(() => {
         fetchRecipes()

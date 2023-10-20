@@ -9,15 +9,15 @@ import Button from "../components/buttons/Button";
 
 
 export default function Authentication() {
-    const { state, signupUser, loginUser } = useAuth();
+    const { authState, signupUser, loginUser } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (state.user) {
+        if (authState.user) {
             // redirect to home page if already logged in
             navigate('/');
         }
-    }, [state.user, navigate]);
+    }, [authState.user, navigate]);
 
     const [isSignUp, setIsSignUp] = useState(false);
     const [formData, setFormData] = useState({
@@ -73,7 +73,7 @@ export default function Authentication() {
                     <Button
                         type="submit"
                         element={isSignUp ? "Sign Up" : "Log In"}
-                        loading={state.loading}
+                        loading={authState.loading}
                     />
                 </div>
             </form>

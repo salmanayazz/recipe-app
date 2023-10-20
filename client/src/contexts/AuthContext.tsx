@@ -12,7 +12,7 @@ interface AuthState {
 }
 
 interface AuthContextType {
-    state: AuthState;
+    authState: AuthState;
     signupUser: (userData: { username: string; password: string }) => void;
     loginUser: (userData: { username: string; password: string }) => void;
     logoutUser: () => void;
@@ -38,7 +38,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const [state, setState] = useState<AuthState>({ user: undefined, loading: false });
+    const [authState, setAuthState] = useState<AuthState>({ user: undefined, loading: false });
 
     useEffect(() => {
         getUser();
@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const signupUser = async (userData: { username: string; password: string }) => {
         try {
-            setState({ ...state, loading: true });
+            setAuthState({ ...authState, loading: true });
             await axiosInstance.post(`${process.env.REACT_APP_BACKEND}/auth/signup`, userData);
             getUser();
         } catch (error) {
@@ -56,40 +56,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const loginUser = async (userData: { username: string; password: string }) => {
         try {
-            setState({ ...state, loading: true });
+            setAuthState({ ...authState, loading: true });
             let response = await axiosInstance.post(`${process.env.REACT_APP_BACKEND}/auth/login`, userData);
-            setState({ ...state, user: response.data.user, loading: false });
+            setAuthState({ ...authState, user: response.data.user, loading: false });
         } catch (error) {
             console.log(error);
-            setState({ ...state, loading: false });
+            setAuthState({ ...authState, loading: false });
         }
     }
 
     const logoutUser = async () => {
         try {
-            setState({ ...state, loading: true });
+            setAuthState({ ...authState, loading: true });
             await axiosInstance.delete(`${process.env.REACT_APP_BACKEND}/auth/logout`);
-            setState({...state, loading: false, user: undefined})
+            setAuthState({...authState, loading: false, user: undefined})
         } catch (error) {
-            setState({ ...state, loading: false });
+            setAuthState({ ...authState, loading: false });
             console.log(error);
         }
     }
 
     const getUser = async () => {
         try {
-            setState({ ...state, loading: true });
+            setAuthState({ ...authState, loading: true });
             const response = await axiosInstance.get(`${process.env.REACT_APP_BACKEND}/auth/login`);
-            setState({ ...state, user: response.data.user, loading: false});
+            setAuthState({ ...authState, user: response.data.user, loading: false});
         } catch (error) {
-            setState({ ...state, loading: false });
+            setAuthState({ ...authState, loading: false });
             console.log(error);
         }
     }
 
     return (
         <AuthContext.Provider value={{ 
-            state, 
+            authState, 
             signupUser,
             loginUser,
             logoutUser,

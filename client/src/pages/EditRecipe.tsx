@@ -15,9 +15,9 @@ import { useRecipes } from '../contexts/RecipesContext';
 export default function EditRecipe() {
     let { recipeId } = useParams();
 
-    const { state, updateRecipe } = useRecipes();
+    const { recipeState, updateRecipe } = useRecipes();
 
-    const recipes: Recipe[] = state.recipes;
+    const recipes: Recipe[] = recipeState.recipes;
     const recipe: Recipe | undefined = recipes.find((recipe) => recipe._id === recipeId);
     
     const navigate = useNavigate();

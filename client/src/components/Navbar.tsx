@@ -8,8 +8,8 @@ import Search from './Search';
 import LoadingAnimation from './LoadingAnimation';
 
 export default function Navbar() {
-    const { state, logoutUser } = useAuth();
-    const user: User | undefined = state.user;
+    const { authState, logoutUser } = useAuth();
+    const user: User | undefined = authState.user;
 
     return (
         <div
@@ -19,7 +19,7 @@ export default function Navbar() {
                 <div className="flex justify-between items-center w-[90%]">
                     <div className="flex flex-1 justify-between space-x-4 gap-6">
                         <Search />
-                        {state.loading ? (
+                        {authState.loading ? (
                             <div className='flex justify-center items-center gap-3'>
                                 <FiUser />
                                 <LoadingAnimation />
