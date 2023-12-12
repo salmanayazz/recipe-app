@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { Recipe } from '../contexts/RecipesContext';
 
 import DynamicInputList, { TextValue } from "./DynamicInputList";
 import TextInput from "./TextInput";
 import Button from "./buttons/Button";
 import Header2 from "./headers/Header2";
+import { useDropzone } from 'react-dropzone';
 
 interface RecipeFormProps {
     recipe?: Recipe
@@ -26,6 +28,18 @@ export default function RecipeForm({
     setDirections,
     afterSubmit
 }: RecipeFormProps) {
+
+    const [image, setImage] = useState<File | undefined>(undefined);
+
+    const { getRootProps, getInputProps } = useDropzone({
+        accept: {
+          'image/*': []
+        },
+        onDrop: (acceptedFiles) => {
+          // Set the selected image file
+          setImage(acceptedFiles[0]);
+        },
+    });
     
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -83,6 +97,7 @@ export default function RecipeForm({
     return(
         <form
             onSubmit={(e) => handleSubmit(e)} 
+            className='flex flex-col gap-3'
         >
             <div>
                 <Header2
@@ -121,29 +136,50 @@ export default function RecipeForm({
                     orderedList={true}
                 />
             </div>
-            <div>
-                <div
-                    className="flex items-center justify-evenly py-3"
-                >
-                    <Button 
-                        type='button' 
-                        element='Reset'
-                        onClick={() => {
-                            setName('');
-                            setIngredients([new TextValue('')]);
-                            setDirections([new TextValue('')]);
-                        }}
-                    />
 
-                    <Button 
-                        type='submit' 
-                        element='Save'
-                    />   
+            <div
+                className='flex flex-col gap-2'
+            >
+                <Header2 
+                    text='Image'
+                />
+                <div {...getRootProps()} className="border-dashed border-2 border-sec-200 rounded-md p-4 text-center cursor-pointer">
+                    <input {...getInputProps()} />
+                    {image ? (
+                        <>   
+                        <p className="text-lg font-semibold">Selected Image</p>
+                        <img
+                            src={URL.createObjectURL(image)}
+                            alt="recipe"
+                            className="mx-auto rounded-md shadow-md"
+                            style={{ maxHeight: '200px' }}
+                        />
+                        </>   
+                    ) : (
+                        <>
+                        <p className="text-lg font-semibold">Drag and Drop Image Here</p>
+                        <p className="text-sec-200">or click to select one</p>
+                        </>
+                    )}
                 </div>
-                
             </div>
-            
-            
+    
+            <div className="flex gap-3">
+                <Button 
+                    type='button' 
+                    element='Reset'
+                    onClick={() => {
+                        setName('');
+                        setIngredients([new TextValue('')]);
+                        setDirections([new TextValue('')]);
+                    }}
+                />
+
+                <Button 
+                    type='submit' 
+                    element='Save'
+                />
+            </div>
         </form> 
     );
 }
