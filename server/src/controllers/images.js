@@ -56,7 +56,6 @@ const uploadImage = async (req, res) => {
     }
 };
 
-
 // retrieve image files
 const getImage = async (req, res) => {
     try {
@@ -81,7 +80,32 @@ const getImage = async (req, res) => {
     }
 };
 
+const deleteImage = async (req, res) => {
+    try {
+        const imageName = req.params.imageName;
+
+        if (!imageName) {
+            return res.status(400).send('Image name parameter is missing.');
+        }
+
+        const image = bucket.file(imageName);
+
+        const [exists] = await image.exists();
+        if (!exists) {
+            return res.status(404).send('Image not found.');
+        }
+
+        await image.delete();
+
+        res.status(200).send('Image deleted successfully.');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
 module.exports = {
     uploadImage,
     getImage,
+    deleteImage
 };
