@@ -8,26 +8,38 @@ const storage = new Storage();
 
 const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
 
+// filter to only allow images
+const imageFileFilter = (req, file, callback) => {
+    const allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/png'];
+  
+    if (allowedMimes.includes(file.mimetype)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Only images are allowed. (jpeg, pjpeg, png)'), false);
+    }
+};
+
 const upload = multer({
     storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 10 * 1024 * 1024 // file size limit is 10mb
+    },
+    fileFilter: imageFileFilter,
 });
 
-// uploads files to gcp cloud storage
 const uploadImage = async (req, res) => {
     try {
         const multerUpload = util.promisify(upload.single('file'));
-
         await multerUpload(req, res);
+        const image = req.file;
 
-        const file = req.file;
-
-        if (!file) {
-            return res.status(400).send('No file uploaded.');
+        if (!image) {
+            return res.status(400).send('No image uploaded.');
         }
 
-        const blob = bucket.file(`${uuidv4()}_${file.originalname}`);
+        const blob = bucket.file(`${uuidv4()}_${image.originalname}`);
 
-        const stream = Readable.from(file.buffer);
+        const stream = Readable.from(image.buffer);
         stream.pipe(blob.createWriteStream({ resumable: false }));
 
         stream.on('end', () => {
@@ -40,7 +52,7 @@ const uploadImage = async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Internal Server Error');
+        res.status(500).send(`${err.message}`);
     }
 };
 
@@ -48,15 +60,15 @@ const uploadImage = async (req, res) => {
 // retrieve image files
 const getImage = async (req, res) => {
     try {
-        const filename = req.params.filename;
+        const imageName = req.params.imageName;
     
-        if (!filename) {
+        if (!imageName) {
             return res.status(400).send('Filename parameter is missing.');
         }
     
-        const file = bucket.file(filename);
+        const image = bucket.file(imageName);
     
-        const readStream = file.createReadStream();
+        const readStream = image.createReadStream();
         readStream.pipe(res);
     
         readStream.on('error', (err) => {
