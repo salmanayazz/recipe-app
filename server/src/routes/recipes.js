@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 require('dotenv').config();
 const multer = require('multer');
-const { getImage, uploadImage, deleteImage } = require('../controllers/images');
+const { uploadImage, deleteImage } = require('../controllers/images');
 
 const Recipe = require('../models/Recipe');
 
@@ -17,6 +17,13 @@ function checkAuthenticated(req, res, next) {
     res.status(401).send('Unauthorized');
 } 
 
+router.use('/', function(req, res, next) {
+    // prevent user from setting the _id or image name
+    req.body._id = undefined;
+    req.body.imageName = undefined;
+    next();
+});
+
 router.get('/', async function(req, res) {
     try {     
         // build the query based on search parameters
@@ -27,7 +34,6 @@ router.get('/', async function(req, res) {
         }
 
         if (req.query.recipeName) {
-            console.log(req.params.recipeName);
             // substring search
             query.name = {
                 $regex: req.query.recipeName,
@@ -47,9 +53,6 @@ router.get('/', async function(req, res) {
 
 router.post('/', checkAuthenticated, upload.single('image'), async function(req, res) {
     try {
-        // prevent user from setting the _id
-        req.body._id = undefined;
-
         const recipe = new Recipe({
             ...req.body,
             username: req.session.username,
@@ -62,8 +65,8 @@ router.post('/', checkAuthenticated, upload.single('image'), async function(req,
             // save the image name
             recipe.imageName = req.imageName;
         }
-        await recipe.save();
 
+        await recipe.save();
         res.status(201).send('Recipe created successfully');
     } catch (error) {
         console.error(error);
@@ -71,26 +74,32 @@ router.post('/', checkAuthenticated, upload.single('image'), async function(req,
     }
 });
 
-router.put('/:recipeID', checkAuthenticated, async function(req, res) {
+router.put('/:recipeID', checkAuthenticated, upload.single('image'), async function(req, res) {
     try {
-        const { name, ingredients, directions } = req.body;
-    
         const recipe = await Recipe.findByIdAndUpdate({
             _id: req.params.recipeID,
             username: req.session.username,
-        }, {
-                name,
-                ingredients: ingredients,
-                directions
-            },
-            { new: true }
+        }, 
+        {...req.body,}, 
+        { new: true }
         );
     
         if (!recipe) {
             return res.status(404).json({ message: 'Recipe not found' });
         }
-    
-        res.json(await Recipe.find({}).limit(20));
+
+        if (recipe.imageName && req.file) {
+            // delete the old image
+            req.params.imageName = recipe.imageName;
+            await deleteImage(req, res);
+
+            // upload the new image
+            await uploadImage(req, res);
+            recipe.imageName = req.imageName;
+        }
+        
+        await recipe.save();
+        res.status(200).send('Recipe updated successfully');
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
@@ -108,7 +117,13 @@ router.delete('/:recipeID', checkAuthenticated, async function(req, res) {
             return res.status(404).json({ message: 'Recipe not found' });
         }
 
-        res.json(await Recipe.find({}).limit(20));
+        if (recipe.imageName) {
+            // delete the image
+            req.params.imageName = recipe.imageName;
+            await deleteImage(req, res);
+        }
+
+        res.status(200).send('Recipe deleted successfully');
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });

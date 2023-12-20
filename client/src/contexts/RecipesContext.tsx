@@ -69,8 +69,8 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
             Object.entries(recipe).forEach(([key, value]) => {
                 if (value instanceof File) {
                     formData.append(key, value, value.name);
-                } else {
-                    formData.append(key, JSON.stringify(value));
+                } else if (value) {
+                    formData.append(key, value.toString());
                 }
             });
         
@@ -88,7 +88,22 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
 
     const updateRecipe = async (recipeID: string, recipe: Recipe) => {
         try {
-            await axiosInstance.put(`${process.env.REACT_APP_BACKEND}/recipes/${recipeID}`, recipe);
+            const formData = new FormData();
+        
+            // append all fields from the recipe object to formData
+            Object.entries(recipe).forEach(([key, value]) => {
+                if (value instanceof File) {
+                    formData.append(key, value, value.name);
+                } else if (value) {
+                    formData.append(key, value.toString());
+                }
+            });
+
+            await axiosInstance.put(`${process.env.REACT_APP_BACKEND}/recipes/${recipeID}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             fetchRecipes();
         } catch (error) {
             console.log(error);

@@ -60,7 +60,7 @@ const getImage = async (req, res) => {
         const imageName = req.params.imageName;
     
         if (!imageName) {
-            return res.status(400).send('Filename parameter is missing.');
+            throw new Error('Filename parameter is missing.');
         }
     
         const image = bucket.file(imageName);
@@ -70,11 +70,11 @@ const getImage = async (req, res) => {
     
         readStream.on('error', (err) => {
             console.error(err);
-            res.status(500).send('Error retrieving image');
+            throw new Error('Error retrieving image');
         });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Internal Server Error');
+        throw err;
     }
 };
 
@@ -83,22 +83,13 @@ const deleteImage = async (req, res) => {
         const imageName = req.params.imageName;
 
         if (!imageName) {
-            return res.status(400).send('Image name parameter is missing.');
+            throw new Error('Image name parameter is missing.');
         }
 
-        const image = bucket.file(imageName);
-
-        const [exists] = await image.exists();
-        if (!exists) {
-            return res.status(404).send('Image not found.');
-        }
-
-        await i.delete();
-
-        res.status(200).send('Image deleted successfully.');
+        await bucket.file(imageName).delete();
     } catch (err) {
         console.error(err);
-        res.status(500).send('Internal Server Error');
+        throw err;
     }
 };
 
