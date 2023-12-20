@@ -2,12 +2,13 @@ import React, { useState, createContext, ReactNode, useContext } from 'react';
 import { axiosInstance } from '../contexts/AuthContext';
 
 export interface Recipe {
-    _id: string;
+    _id?: string;
     name: string;
-    username: string;
+    username?: string;
     ingredients: string[];
     directions: string[];
-    image: File | undefined;
+    image?: File;
+    imageName?: string;
 }
 
 interface RecipesState {
@@ -55,7 +56,23 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
                     params: searchParams 
                 }
             );
-            setRecipeState({ ...recipeState, recipes: response.data });
+
+            // get the image for each recipe
+            const recipesWithImages = await Promise.all(response.data.map(async (recipe: Recipe) => {
+                try {
+                    if (recipe.imageName) {
+                        const response = await fetch(`${process.env.REACT_APP_BACKEND}/images/${recipe.imageName}`);
+                        const blob = await response.blob();
+                
+                        recipe.image = new File([blob], recipe.imageName, { type: blob.type });
+                    }
+                } catch (error) {
+                    console.error('Error loading image:', error);
+                }
+                return recipe;
+            }));
+
+            setRecipeState({ ...recipeState, recipes: recipesWithImages });
         } catch (error) {
             console.log(error);
         }

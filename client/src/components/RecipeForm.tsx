@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Recipe } from '../contexts/RecipesContext';
+import { useEffect, useState } from 'react';
+import { Recipe, useRecipes } from '../contexts/RecipesContext';
 
 import DynamicInputList, { TextValue } from "./DynamicInputList";
 import TextInput from "./TextInput";
@@ -29,6 +29,12 @@ export default function RecipeForm({
     afterSubmit
 }: RecipeFormProps) {
 
+    useEffect(() => {
+        if (recipe?.image) {
+            setImage(recipe.image);
+        }
+    }, []);
+
     const [image, setImage] = useState<File | undefined>(undefined);
 
     const { getRootProps, getInputProps } = useDropzone({
@@ -49,8 +55,6 @@ export default function RecipeForm({
 
         
         let newRecipe: Recipe = {
-            _id: '', // handled by backend
-            username: '',
             name: name,
             ingredients: ingredientValues,
             directions: directionValues,
@@ -147,19 +151,29 @@ export default function RecipeForm({
                 <div {...getRootProps()} className="border-dashed border-2 border-sec-200 rounded-md p-4 text-center cursor-pointer">
                     <input {...getInputProps()} />
                     {image ? (
-                        <>   
-                        <p className="text-lg font-semibold">Selected Image</p>
-                        <img
-                            src={URL.createObjectURL(image)}
-                            alt="recipe"
-                            className="mx-auto rounded-md shadow-md"
-                            style={{ maxHeight: '200px' }}
-                        />
-                        </>   
+                        <div
+                            className='flex flex-col gap-2'
+                        >   
+                            <p className="text-lg font-semibold">Selected Image</p>
+                            <img
+                                src={URL.createObjectURL(image)}
+                                alt="recipe"
+                                className="mx-auto rounded-md shadow-md h-40 object-contain"
+                            />
+                            <Button 
+                                type='button' 
+                                element='Remove Image'
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setImage(undefined)
+                                }}
+                            />
+                        </div>   
                     ) : (
                         <>
-                        <p className="text-lg font-semibold">Drag and Drop Image Here</p>
-                        <p className="text-sec-200">or click to select one</p>
+                            <p className="text-lg font-semibold">Drag and Drop Image Here</p>
+                            <p className="text-sec-200">or click to select one</p>
                         </>
                     )}
                 </div>
@@ -173,6 +187,7 @@ export default function RecipeForm({
                         setName('');
                         setIngredients([new TextValue('')]);
                         setDirections([new TextValue('')]);
+                        setImage(undefined);
                     }}
                 />
 
