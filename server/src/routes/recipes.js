@@ -1,8 +1,13 @@
 var express = require('express');
 var router = express.Router();
 require('dotenv').config();
+const multer = require('multer');
+const { getImage, uploadImage, deleteImage } = require('../controllers/images');
 
 const Recipe = require('../models/Recipe');
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 function checkAuthenticated(req, res, next) {
     if (req.session && req.session.username) {
@@ -40,25 +45,31 @@ router.get('/', async function(req, res) {
     }
 });
 
-router.post('/', checkAuthenticated, async function(req, res) {
+router.post('/', checkAuthenticated, upload.single('image'), async function(req, res) {
     try {
-
-        let body = req.body;
         // prevent user from setting the _id
-        body['_id'] = undefined;
+        req.body._id = undefined;
 
-
-        const recipe = await Recipe.create({
+        const recipe = new Recipe({
             ...req.body,
-            username:  req.session.username,
+            username: req.session.username,
         });
-    
-        res.json(await Recipe.find({}).limit(20));
+
+        // upload the image
+        if (req.file) {
+            await uploadImage(req, res);
+
+            // save the image name
+            recipe.imageName = req.imageName;
+        }
+        await recipe.save();
+
+        res.status(201).send('Recipe created successfully');
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
     }
-})
+});
 
 router.put('/:recipeID', checkAuthenticated, async function(req, res) {
     try {

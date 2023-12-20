@@ -36,7 +36,7 @@ export default function RecipeForm({
           'image/*': []
         },
         onDrop: (acceptedFiles) => {
-          // Set the selected image file
+          // set the selected image file
           setImage(acceptedFiles[0]);
         },
     });
@@ -53,7 +53,8 @@ export default function RecipeForm({
             username: '',
             name: name,
             ingredients: ingredientValues,
-            directions: directionValues
+            directions: directionValues,
+            image: image
         }
         
         afterSubmit(newRecipe);

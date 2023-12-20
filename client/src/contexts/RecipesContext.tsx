@@ -7,6 +7,7 @@ export interface Recipe {
     username: string;
     ingredients: string[];
     directions: string[];
+    image: File | undefined;
 }
 
 interface RecipesState {
@@ -62,12 +63,28 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
 
     const createRecipe = async (recipe: Recipe) => {
         try {
-            await axiosInstance.post(`${process.env.REACT_APP_BACKEND}/recipes`, recipe);
+            const formData = new FormData();
+        
+            // append all fields from the recipe object to formData
+            Object.entries(recipe).forEach(([key, value]) => {
+                if (value instanceof File) {
+                    formData.append(key, value, value.name);
+                } else {
+                    formData.append(key, JSON.stringify(value));
+                }
+            });
+        
+            await axiosInstance.post(`${process.env.REACT_APP_BACKEND}/recipes`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+        
             fetchRecipes();
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     const updateRecipe = async (recipeID: string, recipe: Recipe) => {
         try {

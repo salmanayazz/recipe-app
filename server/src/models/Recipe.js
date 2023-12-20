@@ -17,6 +17,9 @@ var recipeSchema = new mongoose.Schema({
         type: [String],
         required: true,
     }, 
+    imageName: {
+        type: String,
+    },
 })
 
 const Recipe = mongoose.model("Recipe", recipeSchema, 'recipe');

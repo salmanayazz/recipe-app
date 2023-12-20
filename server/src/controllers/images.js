@@ -29,30 +29,28 @@ const upload = multer({
 
 const uploadImage = async (req, res) => {
     try {
-        const multerUpload = util.promisify(upload.single('file'));
-        await multerUpload(req, res);
         const image = req.file;
 
         if (!image) {
-            return res.status(400).send('No image uploaded.');
+            throw new Error('No image uploaded.');
         }
 
-        const blob = bucket.file(`${uuidv4()}_${image.originalname}`);
+        const imageName = `${uuidv4()}_${image.originalname}`;
+        const blob = bucket.file(imageName);
 
         const stream = Readable.from(image.buffer);
         stream.pipe(blob.createWriteStream({ resumable: false }));
 
-        stream.on('end', () => {
-            res.status(200).send('Image uploaded');
+        await new Promise((resolve, reject) => {
+            stream.on('end', resolve);
+            stream.on('error', reject);
         });
 
-        stream.on('error', (err) => {
-            console.log(err);
-            res.status(500).send('Error uploading image');
-        });
+        // add the image name to the request object so it can be saved in the database
+        req.imageName = imageName;
     } catch (err) {
         console.error(err);
-        res.status(500).send(`${err.message}`);
+        throw err;
     }
 };
 
@@ -95,7 +93,7 @@ const deleteImage = async (req, res) => {
             return res.status(404).send('Image not found.');
         }
 
-        await image.delete();
+        await i.delete();
 
         res.status(200).send('Image deleted successfully.');
     } catch (err) {
