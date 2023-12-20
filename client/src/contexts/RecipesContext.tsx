@@ -57,8 +57,22 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
                 }
             );
 
-            // get the image for each recipe
-            const recipesWithImages = await Promise.all(response.data.map(async (recipe: Recipe) => {
+            let recipesImgsToLoad: Recipe[] = []
+
+            // keep the recipe images from the state that haven't been updated
+            response.data.forEach((recipe: Recipe) => {
+                const existingRecipe = recipeState.recipes.find((r: Recipe) => r.imageName === recipe.imageName);
+                if (existingRecipe) {
+                    recipe.image = existingRecipe.image;
+                } else {
+                    recipesImgsToLoad.push(recipe);
+                }
+            });
+
+            setRecipeState({ ...recipeState, recipes: response.data });
+
+            // get the image for each recipe that has updated
+            const newRecipesImgs = await Promise.all(recipesImgsToLoad.map(async (recipe: Recipe) => {
                 try {
                     if (recipe.imageName) {
                         const response = await fetch(`${process.env.REACT_APP_BACKEND}/images/${recipe.imageName}`);
@@ -67,12 +81,20 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
                         recipe.image = new File([blob], recipe.imageName, { type: blob.type });
                     }
                 } catch (error) {
-                    console.error('Error loading image:', error);
+                    console.error(error);
                 }
                 return recipe;
             }));
 
-            setRecipeState({ ...recipeState, recipes: recipesWithImages });
+            // add the new images to the recipes state
+            setRecipeState((prevState) => {
+                const updatedRecipes = prevState.recipes.map((r: Recipe) => {
+                    const updatedRecipe = newRecipesImgs.find((newRecipe) => newRecipe.imageName === r.imageName);
+                    return updatedRecipe ? { ...r, image: updatedRecipe.image } : r;
+                });
+                return { ...prevState, recipes: updatedRecipes };
+            });
+
         } catch (error) {
             console.log(error);
         }
@@ -87,7 +109,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
                 if (value instanceof File) {
                     formData.append(key, value, value.name);
                 } else if (value) {
-                    formData.append(key, value.toString());
+                    formData.append(key, JSON.stringify(value));
                 }
             });
         
@@ -112,7 +134,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
                 if (value instanceof File) {
                     formData.append(key, value, value.name);
                 } else if (value) {
-                    formData.append(key, value.toString());
+                    formData.append(key, JSON.stringify(value));
                 }
             });
 

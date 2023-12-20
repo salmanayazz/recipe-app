@@ -17,13 +17,6 @@ function checkAuthenticated(req, res, next) {
     res.status(401).send('Unauthorized');
 } 
 
-router.use('/', function(req, res, next) {
-    // prevent user from setting the _id or image name
-    req.body._id = undefined;
-    req.body.imageName = undefined;
-    next();
-});
-
 router.get('/', async function(req, res) {
     try {     
         // build the query based on search parameters
@@ -51,7 +44,27 @@ router.get('/', async function(req, res) {
     }
 });
 
-router.post('/', checkAuthenticated, upload.single('image'), async function(req, res) {
+router.use('/', checkAuthenticated, upload.single('image'), function(req, res, next) {
+    // prevent user from setting the _id or image name
+    req.body._id = undefined;
+    req.body.imageName = undefined;
+
+    // parse the json stringified values from req.body
+    req.body = Object.fromEntries(
+        Object.entries(req.body).map(([key, value]) => {
+            try {
+                return [key, JSON.parse(value)];
+            } catch (error) {
+                // if parsing fails, keep the original value
+                return [key, value];
+            }
+        })
+    );
+
+    next();
+});
+
+router.post('/', async function(req, res) {
     try {
         const recipe = new Recipe({
             ...req.body,
@@ -74,14 +87,16 @@ router.post('/', checkAuthenticated, upload.single('image'), async function(req,
     }
 });
 
-router.put('/:recipeID', checkAuthenticated, upload.single('image'), async function(req, res) {
+router.put('/:recipeID', async function(req, res) {
     try {
         const recipe = await Recipe.findByIdAndUpdate({
             _id: req.params.recipeID,
             username: req.session.username,
-        }, 
-        {...req.body,}, 
-        { new: true }
+        }, {
+            ...req.body
+        }, { 
+            new: true 
+        }
         );
     
         if (!recipe) {
@@ -96,6 +111,13 @@ router.put('/:recipeID', checkAuthenticated, upload.single('image'), async funct
             // upload the new image
             await uploadImage(req, res);
             recipe.imageName = req.imageName;
+        } else if (req.file) { // if there is no old image
+            await uploadImage(req, res);
+            recipe.imageName = req.imageName;
+        } else if (!req.file) { // if user removes the image
+            req.params.imageName = recipe.imageName;
+            await deleteImage(req, res);
+            recipe.imageName = undefined;
         }
         
         await recipe.save();
@@ -106,7 +128,7 @@ router.put('/:recipeID', checkAuthenticated, upload.single('image'), async funct
     }
 })
 
-router.delete('/:recipeID', checkAuthenticated, async function(req, res) {
+router.delete('/:recipeID', async function(req, res) {
     try {
         const recipe = await Recipe.findByIdAndDelete({
             _id: req.params.recipeID,

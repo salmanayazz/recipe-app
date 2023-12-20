@@ -7,6 +7,25 @@ import Button from "./buttons/Button";
 import Header2 from "./headers/Header2";
 import { useDropzone } from 'react-dropzone';
 
+/**
+ * props for the RecipeForm component
+ * @param recipe 
+ * the recipe to edit
+ * @param name 
+ * the name of the recipe
+ * @param setName
+ * function to set the name of the recipe
+ * @param ingredients
+ * the ingredients of the recipe
+ * @param setIngredients
+ * function to set the ingredients of the recipe
+ * @param directions
+ * the directions of the recipe
+ * @param setDirections
+ * function to set the directions of the recipe
+ * @param afterSubmit
+ * function to call after the form is submitted
+ */
 interface RecipeFormProps {
     recipe?: Recipe
     name: string
@@ -29,31 +48,34 @@ export default function RecipeForm({
     afterSubmit
 }: RecipeFormProps) {
 
+    const [image, setImage] = useState<File | undefined>(undefined);
+
     useEffect(() => {
+        // load the recipe image data if it exists
         if (recipe?.image) {
             setImage(recipe.image);
         }
     }, []);
 
-    const [image, setImage] = useState<File | undefined>(undefined);
-
     const { getRootProps, getInputProps } = useDropzone({
         accept: {
-          'image/*': []
+            'image/*': []
         },
         onDrop: (acceptedFiles) => {
-          // set the selected image file
-          setImage(acceptedFiles[0]);
+            // set the selected image file
+            setImage(acceptedFiles[0]);
         },
     });
     
+    /**
+     * handles the submit of the form and creates a new recipe
+     */
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
         let ingredientValues: string[] = removeEmpty(ingredients.map((ingredient) => ingredient.value));
         let directionValues: string[] = removeEmpty(directions.map((direction) => direction.value));
 
-        
         let newRecipe: Recipe = {
             name: name,
             ingredients: ingredientValues,
@@ -64,6 +86,9 @@ export default function RecipeForm({
         afterSubmit(newRecipe);
     }
 
+    /**
+     * removes empty strings from an array
+     */
     function removeEmpty(array: string[]): string[] {
         let arrayCopy: string[] = [];
         array.forEach((value) => {
@@ -74,24 +99,36 @@ export default function RecipeForm({
         return arrayCopy;
     }
 
+    /**
+     * updates the value of an ingredient at a given index
+     */
     function updateIngredient(index: number, value: string) {
         let newIngredients = [...ingredients];
         newIngredients[index].value = value;
         setIngredients(newIngredients);
     }
 
+    /**
+     * updates the value of a direction at a given index
+     */
     function updateDirection(index: number, value: string) {
         let newDirections = [...directions];
         newDirections[index].value = value;
         setDirections(newDirections);
     }
 
+    /**
+     * removes an ingredient at a given index
+     */
     function removeIngredient(index: number) {
         let ingredientsCopy = [...ingredients];
         ingredientsCopy.splice(index, 1);
         setIngredients(ingredientsCopy);
     }
 
+    /**
+     * removes a direction at a given index
+     */
     function removeDirection(index: number) {
         let directionsCopy = [...directions];
         directionsCopy.splice(index, 1);
@@ -104,6 +141,7 @@ export default function RecipeForm({
             onSubmit={(e) => handleSubmit(e)} 
             className='flex flex-col gap-3'
         >
+            {/* text inputs */}
             <div>
                 <Header2
                     text='Recipe Name'
@@ -142,6 +180,7 @@ export default function RecipeForm({
                 />
             </div>
 
+            {/* image upload */}
             <div
                 className='flex flex-col gap-2'
             >
@@ -179,6 +218,7 @@ export default function RecipeForm({
                 </div>
             </div>
     
+            {/* buttons */}
             <div className="flex gap-3">
                 <Button 
                     type='button' 
