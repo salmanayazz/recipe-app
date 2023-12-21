@@ -13,26 +13,46 @@ const imageFileFilter = (req, file, callback) => {
     const allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/png'];
   
     if (allowedMimes.includes(file.mimetype)) {
-      callback(null, true);
+        callback(null, true);
     } else {
-      callback(new Error('Only images are allowed. (jpeg, pjpeg, png)'), false);
+        console.error(`Invalid file type: ${file.mimetype}`);
+        callback(new Error('Only images are allowed. (jpeg, pjpeg, png)'), false);
     }
 };
 
-const upload = multer({
+const imageUpload = multer({
     storage: multer.memoryStorage(),
     limits: {
-        fileSize: 10 * 1024 * 1024 // file size limit is 10mb
+        fileSize: 5 * 1024 * 1024 // file size limit is 5mb
     },
     fileFilter: imageFileFilter,
 });
+
+/**
+ * to set the header content type based on the file extension
+ */
+const getContentType = (fileName) => {
+    const extension = fileName.split('.').pop().toLowerCase();
+
+    const contentTypeMap = {
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'png': 'image/png',
+        'gif': 'image/gif',
+        'bmp': 'image/bmp',
+        'webp': 'image/webp',
+    };
+
+    return contentTypeMap[extension] || 'application/octet-stream';
+};
 
 const uploadImage = async (req, res) => {
     try {
         const image = req.file;
 
         if (!image) {
-            throw new Error('No image uploaded.');
+            res.status(400).send('Image file is missing.');
+            return false;
         }
 
         const imageName = `${uuidv4()}_${image.originalname}`;
@@ -48,9 +68,11 @@ const uploadImage = async (req, res) => {
 
         // add the image name to the request object so it can be saved in the database
         req.imageName = imageName;
+        return true;
     } catch (err) {
         console.error(err);
-        throw err;
+        res.status(500).send('Internal server error');
+        return false;
     }
 };
 
@@ -60,21 +82,27 @@ const getImage = async (req, res) => {
         const imageName = req.params.imageName;
     
         if (!imageName) {
-            throw new Error('Filename parameter is missing.');
+            res.status(400).send('Image name parameter is missing.');
+            return false;
         }
     
         const image = bucket.file(imageName);
+
+        res.setHeader('Content-Type', getContentType(imageName));
     
         const readStream = image.createReadStream();
         readStream.pipe(res);
     
         readStream.on('error', (err) => {
             console.error(err);
-            throw new Error('Error retrieving image');
+            res.status(500).send('Internal server error');
+            return false;
         });
+        return true;
     } catch (err) {
         console.error(err);
-        throw err;
+        res.status(500).send('Internal server error');
+        return false;
     }
 };
 
@@ -83,18 +111,22 @@ const deleteImage = async (req, res) => {
         const imageName = req.params.imageName;
 
         if (!imageName) {
-            throw new Error('Image name parameter is missing.');
+            res.status(400).send('Image name parameter is missing.');
+            return false;
         }
 
         await bucket.file(imageName).delete();
+        return true;
     } catch (err) {
         console.error(err);
-        throw err;
+        res.status(500).send('Internal server error');
+        return false;
     }
 };
 
 module.exports = {
     uploadImage,
     getImage,
-    deleteImage
+    deleteImage,
+    imageUpload
 };
