@@ -28,7 +28,7 @@ export default function EditRecipe() {
 
     function afterSubmit(newRecipe: Recipe) {
         try {
-            if (recipe) {
+            if (recipe && recipe._id) {
                 updateRecipe(recipe._id, newRecipe);
             }
         } catch(e) {

@@ -2,11 +2,13 @@ import React, { useState, createContext, ReactNode, useContext } from 'react';
 import { axiosInstance } from '../contexts/AuthContext';
 
 export interface Recipe {
-    _id: string;
+    _id?: string;
     name: string;
-    username: string;
+    username?: string;
     ingredients: string[];
     directions: string[];
+    image?: File;
+    imageName?: string;
 }
 
 interface RecipesState {
@@ -54,7 +56,45 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
                     params: searchParams 
                 }
             );
+
+            let recipesImgsToLoad: Recipe[] = []
+
+            // keep the recipe images from the state that haven't been updated
+            response.data.forEach((recipe: Recipe) => {
+                const existingRecipe = recipeState.recipes.find((r: Recipe) => r.imageName === recipe.imageName);
+                if (existingRecipe) {
+                    recipe.image = existingRecipe.image;
+                } else {
+                    recipesImgsToLoad.push(recipe);
+                }
+            });
+
             setRecipeState({ ...recipeState, recipes: response.data });
+
+            // get the image for each recipe that has updated
+            const newRecipesImgs = await Promise.all(recipesImgsToLoad.map(async (recipe: Recipe) => {
+                try {
+                    if (recipe.imageName) {
+                        const response = await fetch(`${process.env.REACT_APP_BACKEND}/images/${recipe.imageName}`);
+                        const blob = await response.blob();
+                
+                        recipe.image = new File([blob], recipe.imageName, { type: blob.type });
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+                return recipe;
+            }));
+
+            // add the new images to the recipes state
+            setRecipeState((prevState) => {
+                const updatedRecipes = prevState.recipes.map((r: Recipe) => {
+                    const updatedRecipe = newRecipesImgs.find((newRecipe) => newRecipe.imageName === r.imageName);
+                    return updatedRecipe ? { ...r, image: updatedRecipe.image } : r;
+                });
+                return { ...prevState, recipes: updatedRecipes };
+            });
+
         } catch (error) {
             console.log(error);
         }
@@ -62,16 +102,47 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
 
     const createRecipe = async (recipe: Recipe) => {
         try {
-            await axiosInstance.post(`${process.env.REACT_APP_BACKEND}/recipes`, recipe);
+            const formData = new FormData();
+        
+            // append all fields from the recipe object to formData
+            Object.entries(recipe).forEach(([key, value]) => {
+                if (value instanceof File) {
+                    formData.append(key, value, value.name);
+                } else if (value) {
+                    formData.append(key, JSON.stringify(value));
+                }
+            });
+        
+            await axiosInstance.post(`${process.env.REACT_APP_BACKEND}/recipes`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+        
             fetchRecipes();
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     const updateRecipe = async (recipeID: string, recipe: Recipe) => {
         try {
-            await axiosInstance.put(`${process.env.REACT_APP_BACKEND}/recipes/${recipeID}`, recipe);
+            const formData = new FormData();
+        
+            // append all fields from the recipe object to formData
+            Object.entries(recipe).forEach(([key, value]) => {
+                if (value instanceof File) {
+                    formData.append(key, value, value.name);
+                } else if (value) {
+                    formData.append(key, JSON.stringify(value));
+                }
+            });
+
+            await axiosInstance.put(`${process.env.REACT_APP_BACKEND}/recipes/${recipeID}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             fetchRecipes();
         } catch (error) {
             console.log(error);
