@@ -4,6 +4,6 @@ const { getImage, uploadImage, deleteImage } = require('../controllers/images')
 
 const router = express.Router();
 
-router.post('/', uploadImage);
+router.get('/:imageName', getImage);
 
 module.exports = router;
