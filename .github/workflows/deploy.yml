@@ -45,10 +45,10 @@ jobs:
         echo "DATABASE=${{ secrets.DATABASE }}" >> server/.env
         echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> server/.env
         echo "GCS_BUCKET_NAME=${{ secrets.GCS_BUCKET_NAME }}" >> server/.env
-        echo ${{ secrets.GCP_SA_KEY }} > server/gcp-service-account.json
+        echo '${{ secrets.GCP_SA_KEY }}' > server/gcp-service-account.json
         echo "GOOGLE_APPLICATION_CREDENTIALS=./gcp-service-account.json" >> server/.env
-
-        echo "REACT_APP_BACKEND=${{ secrets.REACT_APP_BACKEND }}" >> client/.env
+    
+        echo "REACT_APP_BACKEND=${{ secrets.REACT_APP_BACKEND }}" >> client/.env  
 
     - name: Push to Artifact Registry
       run: |
