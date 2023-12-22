@@ -3,7 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - main
+      - ci-cd
 
 jobs:
   build:
@@ -36,6 +36,19 @@ jobs:
       uses: 'google-github-actions/setup-gcloud@v2'
       with:
         project_id: '${{ secrets.GCP_PROJECT_ID }}'
+
+    - name: Add Environment Variables
+      run: |
+        echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> server/.env
+        echo "GCP_SA_KEY=${{ secrets.GCP_SA_KEY }}" >> server/.env
+        echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> server/.env
+        echo "DATABASE=${{ secrets.DATABASE }}" >> server/.env
+        echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> server/.env
+        echo "GCS_BUCKET_NAME=${{ secrets.GCS_BUCKET_NAME }}" >> server/.env
+        echo ${{ secrets.GCP_SA_KEY }} > server/gcp-service-account.json
+        echo "GOOGLE_APPLICATION_CREDENTIALS=./gcp-service-account.json" >> server/.env
+
+        echo "REACT_APP_BACKEND=${{ secrets.REACT_APP_BACKEND }}" >> client/.env
 
     - name: Push to Artifact Registry
       run: |
