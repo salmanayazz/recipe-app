@@ -14,7 +14,7 @@ export default function RecipeList() {
     
     useEffect(() => {
         fetchRecipes()
-    }, [fetchRecipes]);
+    }, []);
     
     return (
         <div 
