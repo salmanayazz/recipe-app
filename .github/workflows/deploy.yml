@@ -16,7 +16,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '18'
+        node-version: '21'
 
     # TODO: add build and test steps
 
@@ -64,7 +64,17 @@ jobs:
         cd ../server
         docker build -t ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/server:latest .
         docker push ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/server:latest
-    
+
+    - name: Delete old images
+      run: |
+        IMAGES=$(gcloud artifacts docker images list ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app --include-tags --format="get(IMAGE, DIGEST, TAGS)")
+        
+        while read -r IMAGE DIGEST TAG; do
+          if [[ $TAG != "latest" ]]; then
+            gcloud artifacts docker images delete $IMAGE@$DIGEST --delete-tags --quiet
+          fi
+        done <<< "$IMAGES"
+      
     - name: Setup Docker Containers on Compute Engine
       uses: appleboy/ssh-action@master
       with:
@@ -77,13 +87,13 @@ jobs:
           ACCESS_TOKEN=$(gcloud auth print-access-token)
           echo $ACCESS_TOKEN | docker login -u oauth2accesstoken --password-stdin ${{ secrets.GCP_REGION }}-docker.pkg.dev
 
-          docker stop recipe-app-server || true
-          docker rm recipe-app-server || true
-          docker stop recipe-app-client || true
-          docker rm recipe-app-client || true
-
           docker pull ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/client:latest
           docker pull ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/server:latest
 
+          docker stop recipe-app-client || true
+          docker rm recipe-app-client || true
           docker run -d --name recipe-app-client -p 3000:3000 ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/client:latest
+
+          docker stop recipe-app-server || true
+          docker rm recipe-app-server || true
           docker run -d --name recipe-app-server -p 3001:3000 ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/server:latest   
