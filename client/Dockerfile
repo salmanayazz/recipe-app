@@ -1,13 +1,25 @@
-FROM node:18-alpine
+FROM node:18 as builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm i && npm cache clean --force
+RUN npm i
 
 COPY . .
 
+RUN npm run build
+
+# production
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/dist .
+
+RUN npm install -g serve
+
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["serve", "-s", "."]
+
