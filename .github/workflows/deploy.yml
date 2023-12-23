@@ -18,6 +18,8 @@ jobs:
       with:
         node-version: '18'
 
+    # TODO: add build and test steps
+
   deploy:
     runs-on: ubuntu-latest
 
@@ -42,13 +44,13 @@ jobs:
         echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> server/.env
         echo "GCP_SA_KEY=${{ secrets.GCP_SA_KEY }}" >> server/.env
         echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> server/.env
-        echo "DATABASE=${{ secrets.DATABASE }}" >> server/.env
-        echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> server/.env
+        echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> server/.env
+        echo "CLIENT_URL=${{ secrets.CLIENT_URL }}" >> server/.env
         echo "GCS_BUCKET_NAME=${{ secrets.GCS_BUCKET_NAME }}" >> server/.env
         echo '${{ secrets.GCP_SA_KEY }}' > server/gcp-service-account.json
         echo "GOOGLE_APPLICATION_CREDENTIALS=./gcp-service-account.json" >> server/.env
     
-        echo "REACT_APP_BACKEND=${{ secrets.REACT_APP_BACKEND }}" >> client/.env  
+        echo "VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}" >> client/.env  
 
     - name: Push to Artifact Registry
       run: |
@@ -58,6 +60,7 @@ jobs:
         cd client
         docker build -t ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/client:latest .
         docker push ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/client:latest
+
         cd ../server
         docker build -t ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/server:latest .
         docker push ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/server:latest
