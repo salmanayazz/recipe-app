@@ -1,7 +1,6 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { useEffect } from 'react';
 
-import AddButton from '../components/buttons/AddButton';
 import { Recipe } from '../contexts/RecipesContext';
 import Header1 from '../components/headers/Header1';
 import HorizontalLine from '../components/HorizontalLine';

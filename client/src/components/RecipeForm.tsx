@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Recipe, useRecipes } from '../contexts/RecipesContext';
+import { Recipe } from '../contexts/RecipesContext';
 
 import DynamicInputList, { TextValue } from "./DynamicInputList";
 import TextInput from "./TextInput";

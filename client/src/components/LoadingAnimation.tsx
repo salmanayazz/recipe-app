@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export default function LoadingAnimation({}) {
     const dot1 = useRef<HTMLParagraphElement | null>(null);

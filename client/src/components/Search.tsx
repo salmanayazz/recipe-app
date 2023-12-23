@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { FiSearch, FiX } from 'react-icons/fi';
 import TextInput from './TextInput';
 import { useRecipes } from '../contexts/RecipesContext';
