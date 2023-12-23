@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./src/bin/www",
-    "test": "npx mocha"
+    "test": "npx mocha",
+    "start:prod": "node ./src/bin/www"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.7.0",
