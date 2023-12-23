@@ -1,6 +1,5 @@
 import React, { useState, createContext, ReactNode, useContext, useEffect } from 'react';
 import axios from 'axios';
-import { get } from 'http';
 
 export interface User {
     username: string;
@@ -27,7 +26,7 @@ export const useAuth = () => {
 };
 
 export const axiosInstance = axios.create({
-    baseURL: process.env.REACT_APP_BACKEND,
+    baseURL: import.meta.env.VITE_BACKEND,
     withCredentials: true,
 });
 
@@ -47,7 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const signupUser = async (userData: { username: string; password: string }) => {
         try {
             setAuthState({ ...authState, loading: true });
-            await axiosInstance.post(`${process.env.REACT_APP_BACKEND}/auth/signup`, userData);
+            await axiosInstance.post(`auth/signup`, userData);
             getUser();
         } catch (error) {
             console.log(error);
@@ -57,7 +56,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const loginUser = async (userData: { username: string; password: string }) => {
         try {
             setAuthState({ ...authState, loading: true });
-            let response = await axiosInstance.post(`${process.env.REACT_APP_BACKEND}/auth/login`, userData);
+            let response = await axiosInstance.post(`auth/login`, userData);
             setAuthState({ ...authState, user: response.data.user, loading: false });
         } catch (error) {
             console.log(error);
@@ -68,7 +67,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const logoutUser = async () => {
         try {
             setAuthState({ ...authState, loading: true });
-            await axiosInstance.delete(`${process.env.REACT_APP_BACKEND}/auth/logout`);
+            await axiosInstance.delete(`auth/logout`);
             setAuthState({...authState, loading: false, user: undefined})
         } catch (error) {
             setAuthState({ ...authState, loading: false });
@@ -79,7 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const getUser = async () => {
         try {
             setAuthState({ ...authState, loading: true });
-            const response = await axiosInstance.get(`${process.env.REACT_APP_BACKEND}/auth/login`);
+            const response = await axiosInstance.get(`auth/login`);
             setAuthState({ ...authState, user: response.data.user, loading: false});
         } catch (error) {
             setAuthState({ ...authState, loading: false });
