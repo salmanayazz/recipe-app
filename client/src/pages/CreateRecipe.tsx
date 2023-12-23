@@ -7,8 +7,8 @@ import Header1 from '../components/headers/Header1';
 import HorizontalLine from '../components/HorizontalLine';
 import RecipeForm from '../components/RecipeForm';
 
-import { Recipe } from '../contexts/RecipesContext';
-import { useRecipes } from '../contexts/RecipesContext';
+import { Recipe } from '../contexts/recipes/RecipesContext';
+import { useRecipes } from '../contexts/recipes/RecipesContext';
 
 
 

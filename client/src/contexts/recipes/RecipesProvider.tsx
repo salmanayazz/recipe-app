@@ -1,63 +1,26 @@
-import React, { useState, createContext, ReactNode, useContext } from 'react';
-import { axiosInstance } from '../contexts/AuthContext';
+import React, { ReactNode, useState } from 'react';
+import { Recipe, RecipesState, SearchParams, RecipesContext } from './RecipesContext';
+import { axiosInstance } from '../AxiosInstance';
 
-export interface Recipe {
-    _id?: string;
-    name: string;
-    username?: string;
-    ingredients: string[];
-    directions: string[];
-    image?: File;
-    imageName?: string;
-}
-
-interface RecipesState {
-    recipes: Recipe[];
-}
-
-interface RecipesContextType {
-    recipeState: RecipesState;
-    fetchRecipes: (searchParams?: SearchParams) => void;
-    createRecipe: (recipe: Recipe) => void;
-    updateRecipe: (recipeID: string, recipe: Recipe) => void;
-    deleteRecipe: (recipeId: string) => void;
-}
-
-export interface SearchParams {
-    recipeName?: string;
-    username?: string;
+interface RecipesProviderProps {
+    children: ReactNode;
 }
 
 const defaultRecipesState: RecipesState = {
     recipes: [],
 };
 
-export const useRecipes = () => {
-    const context = useContext(RecipesContext);
-    if (!context) {
-      throw new Error('useRecipes must be used within a RecipesProvider');
-    }
-    return context;
-};
-
-const RecipesContext = createContext<RecipesContextType | undefined>(undefined);
-
-interface RecipesProviderProps {
-    children: ReactNode;
-}
-
 export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) => {
     const [recipeState, setRecipeState] = useState<RecipesState>(defaultRecipesState);
 
     const fetchRecipes = async (searchParams?: SearchParams) => {
         try {
-            const response = await axiosInstance.get(
-                `${process.env.REACT_APP_BACKEND}/recipes`, { 
+            const response = await axiosInstance.get(`recipes`, { 
                     params: searchParams 
                 }
             );
 
-            let recipesImgsToLoad: Recipe[] = []
+            const recipesImgsToLoad: Recipe[] = []
 
             // keep the recipe images from the state that haven't been updated
             response.data.forEach((recipe: Recipe) => {
@@ -75,7 +38,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
             const newRecipesImgs = await Promise.all(recipesImgsToLoad.map(async (recipe: Recipe) => {
                 try {
                     if (recipe.imageName) {
-                        const response = await fetch(`${process.env.REACT_APP_BACKEND}/images/${recipe.imageName}`);
+                        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/images/${recipe.imageName}`);
                         const blob = await response.blob();
                 
                         recipe.image = new File([blob], recipe.imageName, { type: blob.type });
@@ -113,7 +76,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
                 }
             });
         
-            await axiosInstance.post(`${process.env.REACT_APP_BACKEND}/recipes`, formData, {
+            await axiosInstance.post(`recipes`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -138,7 +101,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
                 }
             });
 
-            await axiosInstance.put(`${process.env.REACT_APP_BACKEND}/recipes/${recipeID}`, formData, {
+            await axiosInstance.put(`recipes/${recipeID}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -151,7 +114,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({ children }) =>
 
     const deleteRecipe = async (recipeId: string) => {
         try {
-            await axiosInstance.delete(`${process.env.REACT_APP_BACKEND}/recipes/${recipeId}`);
+            await axiosInstance.delete(`${import.meta.env.VITE_SERVER_URL}/recipes/${recipeId}`);
             fetchRecipes();
         } catch (error) {
             console.log(error);

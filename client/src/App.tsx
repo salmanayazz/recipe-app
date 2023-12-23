@@ -6,8 +6,8 @@ import RecipeDetails from "./pages/RecipeDetails";
 import EditRecipe from "./pages/EditRecipe";
 import Authentication from "./pages/Authentication";
 import Navbar from "./components/Navbar";
-import { RecipesProvider } from "./contexts/RecipesContext";
-import AuthProvider from "./contexts/AuthContext";
+import { RecipesProvider } from "./contexts/recipes/RecipesProvider";
+import AuthProvider from "./contexts/auth/AuthProvider";
 
 
 function App() {

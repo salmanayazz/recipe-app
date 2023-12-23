@@ -9,8 +9,8 @@ import EditButton from '../components/buttons/EditButton'
 import DeleteButton from '../components/buttons/DeleteButton'
 import Paragraph from '../components/Paragraph';
 
-import { useRecipes } from '../contexts/RecipesContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useRecipes } from '../contexts/recipes/RecipesContext';
+import { useAuth } from '../contexts/auth/AuthContext';
 
 
 export default function RecipeDetails() {
@@ -18,7 +18,7 @@ export default function RecipeDetails() {
     const { recipeState, deleteRecipe } = useRecipes();
     const navigate = useNavigate();
 
-    let { recipeId } = useParams();
+    const { recipeId } = useParams();
     const recipes = recipeState.recipes;
     const recipe = recipes?.find((recipe) => recipe._id === recipeId);
 

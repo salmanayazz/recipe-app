@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/auth/AuthContext";
 
 import Header1 from "../components/headers/Header1";
 import TextInput from "../components/TextInput";
@@ -29,7 +29,7 @@ export default function Authentication() {
         setIsSignUp(!isSignUp);
     };
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (isSignUp) {

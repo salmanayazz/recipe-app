@@ -66,7 +66,7 @@ const uploadImage = async (req, res) => {
             stream.on('error', reject);
         });
 
-        // add the image name to the request object so it can be saved in the database
+        // add the image name to the request object so it can be saved in the MONGODB_URI
         req.imageName = imageName;
         return true;
     } catch (err) {

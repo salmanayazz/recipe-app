@@ -7,13 +7,13 @@ import Header1 from '../components/headers/Header1';
 import HorizontalLine from '../components/HorizontalLine';
 import RecipeForm from '../components/RecipeForm';
 
-import { Recipe } from '../contexts/RecipesContext';
+import { Recipe } from '../contexts/recipes/RecipesContext';
 
-import { useRecipes } from '../contexts/RecipesContext';
+import { useRecipes } from '../contexts/recipes/RecipesContext';
 
 
 export default function EditRecipe() {
-    let { recipeId } = useParams();
+    const { recipeId } = useParams();
 
     const { recipeState, updateRecipe } = useRecipes();
 
@@ -40,7 +40,7 @@ export default function EditRecipe() {
     }
 
     function generateTextValue(array: string[] | undefined): TextValue[]  {
-        let textValues: TextValue[] = [];
+        const textValues: TextValue[] = [];
         array?.forEach((value) => {
             textValues.push(new TextValue(value));
         })

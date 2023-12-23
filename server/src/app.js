@@ -26,13 +26,13 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
   credentials: true,
-  origin: process.env.FRONTEND_URL
+  origin: process.env.CLIENT_URL
 }));
 
-// expect test config to connect to test database
+// expect test config to connect to test MONGODB_URI
 if (process.env.NODE_ENV !== 'test') {
-  mongoose.connect(process.env.DATABASE);
-  console.log(process.env.DATABASE);
+  mongoose.connect(process.env.MONGODB_URI);
+  console.log(process.env.MONGODB_URI);
   mongoose.connection.on('open', function (ref) { 
     console.log('Connected to mongo server.');
   })

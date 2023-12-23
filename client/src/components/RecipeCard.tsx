@@ -1,5 +1,5 @@
-import { NavLink, Outlet } from 'react-router-dom';
-import { Recipe, useRecipes } from '../contexts/RecipesContext';
+import { NavLink } from 'react-router-dom';
+import { Recipe } from '../contexts/recipes/RecipesContext';
 import Header2 from './headers/Header2';
 import Paragraph from './Paragraph';
 

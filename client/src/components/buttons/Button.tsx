@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import LoadingAnimation from "../LoadingAnimation";
 
 interface ButtonProps {

@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { FiSearch, FiX } from 'react-icons/fi';
 import TextInput from './TextInput';
-import { useRecipes } from '../contexts/RecipesContext';
+import { useRecipes } from '../contexts/recipes/RecipesContext';
 
 export default function Search() {
     const { fetchRecipes } = useRecipes();
@@ -39,4 +39,4 @@ export default function Search() {
             </form>
         </div>
     );
-};
+}
