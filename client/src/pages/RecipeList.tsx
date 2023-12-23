@@ -1,14 +1,12 @@
 import { Outlet } from 'react-router-dom';
 import { useEffect } from 'react';
 
-import { Recipe } from '../contexts/RecipesContext';
+import { Recipe } from '../contexts/recipes/RecipesContext';
 import Header1 from '../components/headers/Header1';
 import HorizontalLine from '../components/HorizontalLine';
 import RecipeCard from '../components/RecipeCard';
 
-import { useRecipes } from '../contexts/RecipesContext';
-
-
+import { useRecipes } from '../contexts/recipes/RecipesContext';
 
 export default function RecipeList() {
     const { recipeState, fetchRecipes } = useRecipes();
@@ -16,7 +14,7 @@ export default function RecipeList() {
     
     useEffect(() => {
         fetchRecipes()
-    }, []);
+    }, [fetchRecipes]);
     
     return (
         <div 

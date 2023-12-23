@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-export default function LoadingAnimation({}) {
+export default function LoadingAnimation() {
     const dot1 = useRef<HTMLParagraphElement | null>(null);
   const dot2 = useRef<HTMLParagraphElement | null>(null);
   const dot3 = useRef<HTMLParagraphElement | null>(null);

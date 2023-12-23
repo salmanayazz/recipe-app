@@ -1,4 +1,4 @@
-import { User, useAuth } from '../contexts/AuthContext';
+import { User, useAuth } from '../contexts/auth/AuthContext';
 import { NavLink, Outlet } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { FiUser, FiLogOut, FiLogIn, FiPlus } from 'react-icons/fi';

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Recipe } from '../contexts/RecipesContext';
+import { Recipe } from '../contexts/recipes/RecipesContext';
 
 import DynamicInputList, { TextValue } from "./DynamicInputList";
 import TextInput from "./TextInput";
@@ -55,7 +55,7 @@ export default function RecipeForm({
         if (recipe?.image) {
             setImage(recipe.image);
         }
-    }, []);
+    }, [recipe?.image]);
 
     const { getRootProps, getInputProps } = useDropzone({
         accept: {
@@ -73,10 +73,10 @@ export default function RecipeForm({
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        let ingredientValues: string[] = removeEmpty(ingredients.map((ingredient) => ingredient.value));
-        let directionValues: string[] = removeEmpty(directions.map((direction) => direction.value));
+        const ingredientValues: string[] = removeEmpty(ingredients.map((ingredient) => ingredient.value));
+        const directionValues: string[] = removeEmpty(directions.map((direction) => direction.value));
 
-        let newRecipe: Recipe = {
+        const newRecipe: Recipe = {
             name: name,
             ingredients: ingredientValues,
             directions: directionValues,
@@ -90,7 +90,7 @@ export default function RecipeForm({
      * removes empty strings from an array
      */
     function removeEmpty(array: string[]): string[] {
-        let arrayCopy: string[] = [];
+        const arrayCopy: string[] = [];
         array.forEach((value) => {
             if (value.length > 0) {
                 arrayCopy.push(value);
@@ -103,7 +103,7 @@ export default function RecipeForm({
      * updates the value of an ingredient at a given index
      */
     function updateIngredient(index: number, value: string) {
-        let newIngredients = [...ingredients];
+        const newIngredients = [...ingredients];
         newIngredients[index].value = value;
         setIngredients(newIngredients);
     }
@@ -112,7 +112,7 @@ export default function RecipeForm({
      * updates the value of a direction at a given index
      */
     function updateDirection(index: number, value: string) {
-        let newDirections = [...directions];
+        const newDirections = [...directions];
         newDirections[index].value = value;
         setDirections(newDirections);
     }
@@ -121,7 +121,7 @@ export default function RecipeForm({
      * removes an ingredient at a given index
      */
     function removeIngredient(index: number) {
-        let ingredientsCopy = [...ingredients];
+        const ingredientsCopy = [...ingredients];
         ingredientsCopy.splice(index, 1);
         setIngredients(ingredientsCopy);
     }
@@ -130,7 +130,7 @@ export default function RecipeForm({
      * removes a direction at a given index
      */
     function removeDirection(index: number) {
-        let directionsCopy = [...directions];
+        const directionsCopy = [...directions];
         directionsCopy.splice(index, 1);
         setDirections(directionsCopy);
     }
