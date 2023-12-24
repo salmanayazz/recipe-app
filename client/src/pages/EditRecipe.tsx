@@ -1,79 +1,82 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-import { TextValue } from '../components/DynamicInputList';
-import PopupWindow from '../components/PopupWindow';
-import Header1 from '../components/headers/Header1';
-import HorizontalLine from '../components/HorizontalLine';
-import RecipeForm from '../components/RecipeForm';
+import { TextValue } from "../components/DynamicInputList";
+import PopupWindow from "../components/PopupWindow";
+import Header1 from "../components/headers/Header1";
+import HorizontalLine from "../components/HorizontalLine";
+import RecipeForm from "../components/RecipeForm";
 
-import { Recipe } from '../contexts/recipes/RecipesContext';
+import { Recipe } from "../contexts/recipes/RecipesContext";
 
-import { useRecipes } from '../contexts/recipes/RecipesContext';
-
+import { useRecipes } from "../contexts/recipes/RecipesContext";
 
 export default function EditRecipe() {
-    const { recipeId } = useParams();
+  const { recipeId } = useParams();
 
-    const { recipeState, updateRecipe } = useRecipes();
+  const { recipeState, updateRecipe } = useRecipes();
 
-    const recipes: Recipe[] = recipeState.recipes;
-    const recipe: Recipe | undefined = recipes.find((recipe) => recipe._id === recipeId);
-    
-    const navigate = useNavigate();
+  const recipes: Recipe[] = recipeState.recipes;
+  const recipe: Recipe | undefined = recipes.find(
+    (recipe) => recipe._id === recipeId,
+  );
 
-    const [name, setName] = useState<string>((recipe ? recipe.name : ''));
-    const [ingredients, setIngredients] = useState<TextValue[]>(generateTextValue(recipe?.ingredients));
-    const [directions, setDirections] = useState<TextValue[]>(generateTextValue(recipe?.directions));
+  const navigate = useNavigate();
 
-    function afterSubmit(newRecipe: Recipe) {
-        try {
-            if (recipe && recipe._id) {
-                updateRecipe(recipe._id, newRecipe);
-            }
-        } catch(e) {
-            console.log(e);
-            return;
-        }
-        
-        returnHome();
+  const [name, setName] = useState<string>(recipe ? recipe.name : "");
+  const [ingredients, setIngredients] = useState<TextValue[]>(
+    generateTextValue(recipe?.ingredients),
+  );
+  const [directions, setDirections] = useState<TextValue[]>(
+    generateTextValue(recipe?.directions),
+  );
+
+  function afterSubmit(newRecipe: Recipe) {
+    try {
+      if (recipe && recipe._id) {
+        updateRecipe(recipe._id, newRecipe);
+      }
+    } catch (e) {
+      console.log(e);
+      return;
     }
 
-    function generateTextValue(array: string[] | undefined): TextValue[]  {
-        const textValues: TextValue[] = [];
-        array?.forEach((value) => {
-            textValues.push(new TextValue(value));
-        })
-        return textValues
-    }
+    returnHome();
+  }
 
-    function returnHome() {
-        navigate(-2);
-    }
+  function generateTextValue(array: string[] | undefined): TextValue[] {
+    const textValues: TextValue[] = [];
+    array?.forEach((value) => {
+      textValues.push(new TextValue(value));
+    });
+    return textValues;
+  }
 
-    return (
-        <PopupWindow 
-            element={
-                <>
-                    <Header1
-                        text='Edit Recipe'
-                    />
+  function returnHome() {
+    navigate(-2);
+  }
 
-                    <HorizontalLine />
-                    
-                    <RecipeForm
-                        recipe={recipe}
-                        name={name}
-                        setName={setName}
-                        ingredients={ingredients}
-                        setIngredients={setIngredients}
-                        directions={directions}    
-                        setDirections={setDirections}
-                        afterSubmit={afterSubmit}
-                    />
-                </>
-            }
-            onExit={returnHome}
-        />
-    );
+  return (
+    <PopupWindow
+      element={
+        <>
+          <Header1 text="Edit Recipe" />
+
+          <HorizontalLine />
+
+          <RecipeForm
+            recipe={recipe}
+            name={name}
+            setName={setName}
+            ingredients={ingredients}
+            setIngredients={setIngredients}
+            directions={directions}
+            setDirections={setDirections}
+            afterSubmit={afterSubmit}
+          />
+        </>
+      }
+      onExit={returnHome}
+    />
+  );
 }

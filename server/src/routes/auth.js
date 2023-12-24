@@ -1,9 +1,9 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var crypto = require('crypto');
-var bcrypt = require('bcrypt');
+var crypto = require("crypto");
+var bcrypt = require("bcrypt");
 
-const User = require('../models/User');
+const User = require("../models/User");
 
 async function getUser(req, res, next) {
   try {
@@ -11,26 +11,26 @@ async function getUser(req, res, next) {
     const password = req.body.password;
 
     if (!username || !password) {
-      return res.status(400).send('Missing username or password');
+      return res.status(400).send("Missing username or password");
     }
 
-    res.user = await User.findOne({username: username});
+    res.user = await User.findOne({ username: username });
 
-    next(); 
+    next();
   } catch (err) {
     console.log(err);
-    return res.status(500).send('Internal server error');
+    return res.status(500).send("Internal server error");
   }
-};
+}
 
-router.post('/signup', getUser, async function(req, res) {
+router.post("/signup", getUser, async function (req, res) {
   try {
     const user = res.user;
     const username = req.body.username;
     const password = req.body.password;
 
     if (user) {
-      return res.status(409).send('User already exists');
+      return res.status(409).send("User already exists");
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -38,63 +38,62 @@ router.post('/signup', getUser, async function(req, res) {
 
     await User.create({
       username: username,
-      password: hashedPassword
+      password: hashedPassword,
     });
 
     req.session.username = username;
 
-    return res.status(201).send('User created');
+    return res.status(201).send("User created");
   } catch (err) {
     console.log(err);
-    return res.status(500).send('Internal server error');
+    return res.status(500).send("Internal server error");
   }
 });
 
-router.post('/login', getUser, async function(req, res) {
+router.post("/login", getUser, async function (req, res) {
   try {
     const user = res.user;
     const username = req.body.username;
     const password = req.body.password;
 
     if (!user) {
-      return res.status(404).send('User does not exist');
+      return res.status(404).send("User does not exist");
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
-      return res.status(400).send('Incorrect password');
+      return res.status(400).send("Incorrect password");
     }
-    
+
     req.session.username = username;
 
-    return res.status(200).json({user: {username: req.session.username}});
+    return res.status(200).json({ user: { username: req.session.username } });
   } catch (err) {
     console.log(err);
-    return res.status(500).send('Internal server error');
+    return res.status(500).send("Internal server error");
   }
 });
 
-router.get('/login', function(req, res) {
+router.get("/login", function (req, res) {
   try {
     if (req.session.username) {
-      return res.status(200).json({user: {username: req.session.username}});
+      return res.status(200).json({ user: { username: req.session.username } });
     } else {
-      return res.status(401).send('Unauthorized');
+      return res.status(401).send("Unauthorized");
     }
   } catch (err) {
     console.log(err);
-    return res.status(500).send('Internal server error');
+    return res.status(500).send("Internal server error");
   }
 });
 
-router.delete('/logout', function(req, res) {
+router.delete("/logout", function (req, res) {
   try {
     req.session.destroy();
-    return res.status(200).send('Sucessfully logged out');
+    return res.status(200).send("Sucessfully logged out");
   } catch (err) {
     console.error(err);
-    return res.status(500).send('Internal server error');
+    return res.status(500).send("Internal server error");
   }
 });
 
 module.exports = router;
- 

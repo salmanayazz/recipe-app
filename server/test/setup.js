@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 // connect to the test MONGODB_URI before all tests
 before(async () => {
