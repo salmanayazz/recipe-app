@@ -6,11 +6,10 @@
     "start": "nodemon --exec ts-node src/bin/www.ts",
     "build": "tsc -p . --outDir ./build",
     "test": "npx mocha",
-    "start:prod": "node ./src/bin/www"
+    "start:prod": "node ./build/src/bin/www.js"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.7.0",
-    "@types/mongoose": "^5.11.97",
     "bcrypt": "^5.1.1",
     "bson": "^5.3.0",
     "chai": "^4.3.8",
@@ -23,7 +22,6 @@
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "http-errors": "~1.6.3",
-    "jade": "^0.29.0",
     "mocha": "^10.2.0",
     "mongoose": "^7.6.7",
     "morgan": "~1.9.1",
