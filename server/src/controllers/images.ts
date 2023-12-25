@@ -1,15 +1,27 @@
-const { Storage } = require("@google-cloud/storage");
-const { v4: uuidv4 } = require("uuid");
-const multer = require("multer");
-const util = require("util");
-const { Readable } = require("stream");
+import { Storage } from "@google-cloud/storage";
+import { v4 as uuidv4 } from "uuid";
+import multer from "multer";
+import { Readable } from "stream";
+import { Bucket } from "@google-cloud/storage/build/cjs/src/bucket";
+import { Request, Response } from "express";
+import dotenv from "dotenv";
+dotenv.config();
 
 const storage = new Storage();
 
-const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+let bucket: Bucket;
+if (!process.env.GCS_BUCKET_NAME) {
+  throw new Error("GCS_BUCKET_NAME is missing.");
+} else {
+  bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+}
 
 // filter to only allow images
-const imageFileFilter = (req, file, callback) => {
+const imageFileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  callback: any
+) => {
   const allowedMimes = ["image/jpeg", "image/pjpeg", "image/png"];
 
   if (allowedMimes.includes(file.mimetype)) {
@@ -20,7 +32,7 @@ const imageFileFilter = (req, file, callback) => {
   }
 };
 
-const imageUpload = multer({
+export const imageUploadMulter = multer({
   storage: multer.memoryStorage(),
   limits: {
     fileSize: 5 * 1024 * 1024, // file size limit is 5mb
@@ -31,10 +43,10 @@ const imageUpload = multer({
 /**
  * to set the header content type based on the file extension
  */
-const getContentType = (fileName) => {
-  const extension = fileName.split(".").pop().toLowerCase();
+const getContentType = (fileName: string) => {
+  const extension = fileName.split(".").pop()?.toLowerCase() || "";
 
-  const contentTypeMap = {
+  const contentTypeMap: { [key: string]: string } = {
     jpg: "image/jpeg",
     jpeg: "image/jpeg",
     png: "image/png",
@@ -46,7 +58,23 @@ const getContentType = (fileName) => {
   return contentTypeMap[extension] || "application/octet-stream";
 };
 
-const uploadImage = async (req, res) => {
+/**
+ * interface to add imageName to the request object
+ * to return it from the uploadImage function
+ */
+export interface ImageRequest extends Request {
+  imageName?: string;
+}
+
+/**
+ * upload image files
+ * @returns
+ * returns true if the image was uploaded successfully
+ */
+export const uploadImage = async (
+  req: ImageRequest,
+  res: Response
+): Promise<boolean> => {
   try {
     const image = req.file;
 
@@ -66,7 +94,7 @@ const uploadImage = async (req, res) => {
       stream.on("error", reject);
     });
 
-    // add the image name to the request object so it can be saved in the MONGODB_URI
+    // add the image name to the request object so it can be saved in the database
     req.imageName = imageName;
     return true;
   } catch (err) {
@@ -76,8 +104,15 @@ const uploadImage = async (req, res) => {
   }
 };
 
-// retrieve image files
-const getImage = async (req, res) => {
+/**
+ * get image files
+ * @returns
+ * returns true if the image was retrieved successfully
+ */
+export const getImage = async (
+  req: Request,
+  res: Response
+): Promise<boolean> => {
   try {
     const imageName = req.params.imageName;
 
@@ -106,7 +141,15 @@ const getImage = async (req, res) => {
   }
 };
 
-const deleteImage = async (req, res) => {
+/**
+ * delete image files
+ * @returns
+ * returns true if the image was deleted successfully
+ */
+export const deleteImage = async (
+  req: Request,
+  res: Response
+): Promise<boolean> => {
   try {
     const imageName = req.params.imageName;
 
@@ -122,11 +165,4 @@ const deleteImage = async (req, res) => {
     res.status(500).send("Internal server error");
     return false;
   }
-};
-
-module.exports = {
-  uploadImage,
-  getImage,
-  deleteImage,
-  imageUpload,
 };

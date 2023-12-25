@@ -1,15 +1,17 @@
-var express = require("express");
-var router = express.Router();
-require("dotenv").config();
-const {
+import express, { NextFunction, Request, Response } from "express";
+import { Recipe, RecipeModel } from "../models/Recipe";
+import {
   uploadImage,
   deleteImage,
-  imageUpload,
-} = require("../controllers/images");
+  imageUploadMulter,
+  ImageRequest,
+} from "../controllers/images";
+import dotenv from "dotenv";
 
-const Recipe = require("../models/Recipe");
+const router = express.Router();
+dotenv.config();
 
-function checkAuthenticated(req, res, next) {
+function checkAuthenticated(req: Request, res: Response, next: NextFunction) {
   if (req.session && req.session.username) {
     return next();
   }
@@ -17,10 +19,10 @@ function checkAuthenticated(req, res, next) {
   res.status(401).send("Unauthorized");
 }
 
-router.get("/", async function (req, res) {
+router.get("/", async function (req: Request, res: Response) {
   try {
     // build the query based on search parameters
-    const query = {};
+    const query: { [key: string]: any } = {};
 
     if (req.query.username) {
       query.username = req.query.username;
@@ -37,7 +39,7 @@ router.get("/", async function (req, res) {
       query.ingredients = req.query.ingredients;
     }
 
-    res.json(await Recipe.find(query).limit(24));
+    res.json(await RecipeModel.find(query).limit(24));
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal server error");
@@ -47,8 +49,8 @@ router.get("/", async function (req, res) {
 router.use(
   "/",
   checkAuthenticated,
-  imageUpload.single("image"),
-  function (req, res, next) {
+  imageUploadMulter.single("image"),
+  function (req: Request, res: Response, next) {
     try {
       // prevent user from setting the _id or image name
       req.body._id = undefined;
@@ -58,12 +60,12 @@ router.use(
       req.body = Object.fromEntries(
         Object.entries(req.body).map(([key, value]) => {
           try {
-            return [key, JSON.parse(value)];
+            return [key, JSON.parse(value as string)];
           } catch (error) {
             // if parsing fails, keep the original value
             return [key, value];
           }
-        }),
+        })
       );
 
       next();
@@ -71,12 +73,12 @@ router.use(
       console.error(error);
       res.status(500).send("Internal server error");
     }
-  },
+  }
 );
 
-router.post("/", async function (req, res) {
+router.post("/", async function (req: ImageRequest, res: Response) {
   try {
-    const recipe = new Recipe({
+    const recipe = new RecipeModel({
       ...req.body,
       username: req.session.username,
     });
@@ -99,9 +101,9 @@ router.post("/", async function (req, res) {
   }
 });
 
-router.put("/:recipeID", async function (req, res) {
+router.put("/:recipeID", async function (req: ImageRequest, res: Response) {
   try {
-    const recipe = await Recipe.findByIdAndUpdate(
+    const recipe = await RecipeModel.findByIdAndUpdate(
       {
         _id: req.params.recipeID,
         username: req.session.username,
@@ -111,7 +113,7 @@ router.put("/:recipeID", async function (req, res) {
       },
       {
         new: true,
-      },
+      }
     );
 
     if (!recipe) {
@@ -136,7 +138,7 @@ router.put("/:recipeID", async function (req, res) {
         return;
       }
       recipe.imageName = req.imageName;
-    } else if (!req.file) {
+    } else if (recipe.imageName && !req.file) {
       // if user removes the image
       req.params.imageName = recipe.imageName;
       if (!(await deleteImage(req, res))) {
@@ -153,9 +155,9 @@ router.put("/:recipeID", async function (req, res) {
   }
 });
 
-router.delete("/:recipeID", async function (req, res) {
+router.delete("/:recipeID", async function (req: Request, res: Response) {
   try {
-    const recipe = await Recipe.findByIdAndDelete({
+    const recipe: Recipe | null = await RecipeModel.findOne({
       _id: req.params.recipeID,
       username: req.session.username,
     });
@@ -172,6 +174,10 @@ router.delete("/:recipeID", async function (req, res) {
       }
     }
 
+    await RecipeModel.deleteOne({
+      _id: recipe._id,
+    });
+
     res.status(200).send("Recipe deleted successfully");
   } catch (error) {
     console.error(error);
@@ -179,4 +185,4 @@ router.delete("/:recipeID", async function (req, res) {
   }
 });
 
-module.exports = router;
+export default router;
