@@ -1,18 +1,23 @@
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-var cors = require("cors");
-const mongoose = require("mongoose");
-var session = require("express-session");
+import createError from "http-errors";
+import express, { Request, Response, NextFunction } from "express";
+import path from "path";
+import cookieParser from "cookie-parser";
+import logger from "morgan";
+import cors from "cors";
+import mongoose from "mongoose";
+import session from "express-session";
+import dotenv from "dotenv";
 
-var indexRouter = require("./routes/index");
-var authRouter = require("./routes/auth");
-var recipesRouter = require("./routes/recipes");
-var imagesRouter = require("./routes/images");
+import indexRouter from "./routes/index";
+import authRouter from "./routes/auth";
+import recipesRouter from "./routes/recipes";
+import imagesRouter from "./routes/images";
 
-var app = express();
+dotenv.config();
+
+const app = express();
+
+export default app;
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -23,15 +28,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
 app.use(
   cors({
     credentials: true,
     origin: process.env.CLIENT_URL,
-  }),
+  })
 );
 
 // expect test config to connect to test MONGODB_URI
 if (process.env.NODE_ENV !== "test") {
+  if (!process.env.MONGODB_URI) {
+    throw new Error("MONGODB_URI environment variable is not set");
+  }
   mongoose.connect(process.env.MONGODB_URI);
   console.log(process.env.MONGODB_URI);
   mongoose.connection.on("open", function (ref) {
@@ -39,14 +48,19 @@ if (process.env.NODE_ENV !== "test") {
   });
 }
 
+declare module "express-session" {
+  interface SessionData {
+    username?: string;
+  }
+}
+
 app.use(
   session({
     name: "session",
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "secret",
     resave: false,
     saveUninitialized: false,
-    maxAge: 30 * 60 * 1000,
-  }),
+  })
 );
 
 app.use("/", indexRouter);
@@ -55,12 +69,12 @@ app.use("/recipes", recipesRouter);
 app.use("/images", imagesRouter);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function (req: Request, res: Response, next: NextFunction) {
   next(createError(404));
 });
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use(function (err: any, req: Request, res: Response, next: NextFunction) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
