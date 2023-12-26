@@ -2,7 +2,6 @@ import express from "express";
 import bcrypt from "bcrypt";
 import { Request, Response, NextFunction } from "express";
 import { UserModel, User } from "../models/User";
-import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -75,7 +74,7 @@ router.post(
       }
 
       if (!(await bcrypt.compare(password, user.password))) {
-        return res.status(400).send("Incorrect password");
+        return res.status(401).send("Incorrect password");
       }
 
       req.session.username = username;
@@ -93,7 +92,7 @@ router.get("/login", async function (req: Request, res: Response) {
     if (req.session.username) {
       return res.status(200).json({ user: { username: req.session.username } });
     } else {
-      return res.status(401).send("Unauthorized");
+      return res.status(401).send("No valid session");
     }
   } catch (err) {
     console.log(err);
@@ -102,6 +101,10 @@ router.get("/login", async function (req: Request, res: Response) {
 });
 
 router.delete("/logout", function (req: Request, res: Response) {
+  if (!req.session.username) {
+    return res.status(401).send("No valid session");
+  }
+
   req.session.destroy(function (err) {
     if (err) {
       console.error(err);
