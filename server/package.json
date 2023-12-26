@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nodemon --exec ts-node src/bin/www.ts",
     "build": "tsc -p . --outDir ./build",
-    "test": "cross-env NODE_ENV=test mocha --require ts-node/register test/**/*.ts --exit",
+    "test": "cross-env NODE_ENV=test nyc mocha --require ts-node/register test/**/*.ts --exit",
     "start:prod": "node ./build/src/bin/www.js"
   },
   "dependencies": {
@@ -21,6 +21,7 @@
     "mongoose": "^7.6.7",
     "morgan": "~1.9.1",
     "multer": "^1.4.5-lts.1",
+    "nyc": "^15.1.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
