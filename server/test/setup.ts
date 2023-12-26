@@ -13,10 +13,6 @@ before(async () => {
   } as mongoose.ConnectOptions);
 });
 
-afterEach(async () => {
-  await mongoose.connection.dropDatabase();
-});
-
 after(async () => {
   await mongoose.disconnect();
   await mongoServer.stop();
