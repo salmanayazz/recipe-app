@@ -1,19 +1,23 @@
+import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 
-// connect to the test database before all tests
+let mongoServer: MongoMemoryServer;
+
 before(async () => {
-  if (!process.env.MONGODB_URI) {
-    throw new Error("MONGODB_URI environment variable is not set");
-  }
-  await mongoose.connect(process.env.MONGODB_URI, {
+  mongoServer = await MongoMemoryServer.create();
+  const mongoUri = mongoServer.getUri();
+
+  mongoose.connect(mongoUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   } as mongoose.ConnectOptions);
 });
 
-// Clear data and disconnect after all tests
-after(async () => {
-  // Drop all collections to clear data
+afterEach(async () => {
   await mongoose.connection.dropDatabase();
-  await mongoose.connection.close();
+});
+
+after(async () => {
+  await mongoose.disconnect();
+  await mongoServer.stop();
 });

@@ -1,36 +1,42 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
 import server from "../src/app";
-const should = chai.should();
+import e from "express";
+
+const expect = chai.expect;
 
 chai.use(chaiHttp);
 
 describe("recipes", function () {
+  let agent = chai.request.agent(server);
+  before(async function () {
+    const response = await agent.post("/auth/signup").send({
+      username: "test",
+      password: "test",
+    });
+  });
+
   describe("GET /recipes", function () {
-    it("should get all recipes on GET /recipes", function (done) {
-      chai
-        .request(server)
-        .get("/recipes")
-        .end(function (err, res) {
-          res.should.have.status(200);
-          res.should.be.a.json;
-          res.body.should.be.a("array");
-          done();
-        });
+    it("should get all recipes on GET /recipes", async () => {
+      let response = await chai.request(server).get("/recipes");
+
+      expect(response).to.have.status(200);
+      expect(response).to.be.json;
+      expect(response.body).to.be.an("array");
     });
   });
 
   describe("POST /recipes", function () {
     it("should add a recipe on POST /recipes", function (done) {
-      chai
-        .request(server)
+      agent
         .post("/recipes")
         .send({
           name: "test",
           ingredients: ["1", "2"],
+          directions: ["3", "4"],
         })
         .end(function (err, res) {
-          res.should.have.status(200);
+          expect(res).to.have.status(201);
           done();
         });
     });
@@ -38,59 +44,52 @@ describe("recipes", function () {
 
   describe("PUT /recipes", function () {
     it("should update a recipe on PUT /recipes", async function () {
-      // Add a recipe
-      const addResponse = await chai
-        .request(server)
-        .post("/recipes")
-        .send({
-          name: "test",
-          ingredients: ["1", "2"],
-        });
-      addResponse.should.have.status(200);
+      // add a recipe
+      const addResponse = await agent.post("/recipes").send({
+        name: "test",
+        ingredients: ["1", "2"],
+        directions: ["3", "4"],
+      });
+      expect(addResponse).to.have.status(201);
 
-      // Get all recipes
+      // get all recipes
       const getResponse = await chai.request(server).get("/recipes");
-      getResponse.should.have.status(200);
-      getResponse.should.be.a.json;
-      getResponse.body.should.be.an("array");
+      expect(getResponse).to.have.status(200);
+      expect(getResponse).to.be.json;
+      expect(getResponse.body).to.be.an("array");
       const recipes = getResponse.body;
 
-      // Update a recipe
-      const updateResponse = await chai
-        .request(server)
+      // update a recipe
+      const updateResponse = await agent
         .put(`/recipes/${recipes[0]._id}`)
         .send({
           name: "updated",
           ingredients: ["1", "2", "3"],
+          directions: ["4", "5", "6"],
         });
-      updateResponse.should.have.status(200);
+      expect(updateResponse).to.have.status(200);
     });
   });
 
   describe("DELETE /recipes", function () {
     it("should delete a recipe on DELETE /recipes", async function () {
-      // Add a recipe
-      const addResponse = await chai
-        .request(server)
-        .post("/recipes")
-        .send({
-          name: "test",
-          ingredients: ["1", "2"],
-        });
-      addResponse.should.have.status(200);
+      // add a recipe
+      const addResponse = await agent.post("/recipes").send({
+        name: "test",
+        ingredients: ["1", "2"],
+      });
+      expect(addResponse).to.have.status(201);
 
-      // Get all recipes
+      // get all recipes
       const getResponse = await chai.request(server).get("/recipes");
-      getResponse.should.have.status(200);
-      getResponse.should.be.a.json;
-      getResponse.body.should.be.an("array");
+      expect(getResponse).to.have.status(200);
+      expect(getResponse).to.be.json;
+      expect(getResponse.body).to.be.an("array");
       const recipes = getResponse.body;
 
       // delete a recipe
-      const deletedResponse = await chai
-        .request(server)
-        .delete(`/recipes/${recipes[0]._id}`);
-      deletedResponse.should.have.status(200);
+      const deletedResponse = await agent.delete(`/recipes/${recipes[0]._id}`);
+      expect(deletedResponse).to.have.status(200);
     });
   });
 });

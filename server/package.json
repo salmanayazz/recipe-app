@@ -5,33 +5,27 @@
   "scripts": {
     "start": "nodemon --exec ts-node src/bin/www.ts",
     "build": "tsc -p . --outDir ./build",
-    "test": "npx mocha",
+    "test": "cross-env NODE_ENV=test mocha --require ts-node/register test/**/*.ts --exit",
     "start:prod": "node ./build/src/bin/www.js"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.7.0",
     "bcrypt": "^5.1.1",
-    "bson": "^5.3.0",
-    "chai": "^4.3.8",
-    "chai-http": "^4.4.0",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^16.1.4",
-    "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "http-errors": "~1.6.3",
-    "mocha": "^10.2.0",
     "mongoose": "^7.6.7",
     "morgan": "~1.9.1",
     "multer": "^1.4.5-lts.1",
-    "passport": "^0.6.0",
-    "passport-local": "^1.0.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/chai": "^4.3.11",
     "@types/cookie-parser": "^1.4.6",
     "@types/cors": "^2.8.17",
     "@types/debug": "^4.1.12",
@@ -42,7 +36,13 @@
     "@types/multer": "^1.4.11",
     "@types/node": "^20.10.5",
     "@types/uuid": "^9.0.7",
+    "chai": "^4.3.10",
+    "chai-http": "^4.4.0",
+    "cross-env": "^7.0.3",
+    "mocha": "^10.2.0",
+    "mongodb-memory-server": "^9.1.3",
     "nodemon": "^3.0.2",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
 }
