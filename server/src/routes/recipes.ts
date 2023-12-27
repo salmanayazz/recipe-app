@@ -103,7 +103,7 @@ router.post("/", async function (req: ImageRequest, res: Response) {
 
 router.put("/:recipeID", async function (req: ImageRequest, res: Response) {
   try {
-    const recipe = await RecipeModel.findByIdAndUpdate(
+    const recipe = await RecipeModel.findOneAndUpdate(
       {
         _id: req.params.recipeID,
         username: req.session.username,
@@ -113,6 +113,7 @@ router.put("/:recipeID", async function (req: ImageRequest, res: Response) {
       },
       {
         new: true,
+        upsert: false,
       }
     );
 

@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:16 AS builder
 
 WORKDIR /usr/src/app
 
@@ -8,22 +8,34 @@ RUN npm ci
 
 COPY . .
 
+# for mongodb-memory-server to work
+RUN apt-get install libcurl4
+
+RUN npm test
+
 RUN npm run build
+
+FROM node:18-alpine
+
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/ ./
 
 # remove files not needed in production
 RUN rm -rf src
 RUN rm -rf test
 RUN rm -rf .git
-RUN rm -rf .gitignore
-RUN rm -rf tsconfig.json
-RUN rm -rf Dockerfile
-RUN rm -rf .dockerignore
+RUN rm -f .gitignore
+RUN rm -f tsconfig.json
+RUN rm -f Dockerfile
+RUN rm -f .dockerignore
 
 EXPOSE 3000
 
 ENV NODE_ENV=production
 
-RUN npm prune --omit=dev
+RUN npm prune --production
+RUN npm ci --only=production
 
 RUN npm cache clean --force
 

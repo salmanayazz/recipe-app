@@ -25,3 +25,6 @@ yarn-error.log*
 
 # google cloud platform
 bold-passkey-*.json
+
+# test output
+.nyc_output
