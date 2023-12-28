@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/auth/AuthContext";
+import { AuthError, useAuth } from "../contexts/auth/AuthContext";
 
 import Header1 from "../components/headers/Header1";
 import TextInput from "../components/TextInput";
@@ -18,6 +18,7 @@ export default function Authentication() {
     }
   }, [authState.user, navigate]);
 
+  const [authError, setAuthError] = useState<AuthError | undefined>(undefined);
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
@@ -32,9 +33,9 @@ export default function Authentication() {
     e.preventDefault();
 
     if (isSignUp) {
-      signupUser(formData);
+      setAuthError(await signupUser(formData));
     } else {
-      loginUser(formData);
+      setAuthError(await loginUser(formData));
     }
   };
 
@@ -54,6 +55,7 @@ export default function Authentication() {
               onChange={(value) =>
                 setFormData({ ...formData, username: value })
               }
+              error={authError?.username}
             />
 
             <TextInput
@@ -65,6 +67,7 @@ export default function Authentication() {
               onChange={(value) =>
                 setFormData({ ...formData, password: value })
               }
+              error={authError?.password}
             />
           </div>
 
@@ -73,6 +76,10 @@ export default function Authentication() {
               type="submit"
               element={isSignUp ? "Sign Up" : "Log In"}
               loading={authState.loading}
+              error={authError?.other}
+              onClick={() => {
+                setAuthError(undefined);
+              }}
             />
           </div>
         </form>
