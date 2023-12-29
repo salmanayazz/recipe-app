@@ -5,6 +5,7 @@ import {
   deleteImage,
   imageUploadMulter,
   ImageRequest,
+  imageUploadMiddleware,
 } from "../controllers/images";
 import dotenv from "dotenv";
 
@@ -83,8 +84,8 @@ router.delete(
 router.use(
   "/",
   checkAuthenticated,
-  imageUploadMulter.single("image"),
-  function (req: Request, res: Response, next) {
+  imageUploadMiddleware,
+  function (req: Request, res: Response, next: NextFunction) {
     try {
       // prevent user from setting the _id or image name
       req.body._id = undefined;

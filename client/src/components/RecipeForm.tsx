@@ -204,6 +204,9 @@ export default function RecipeForm({
                 alt="recipe"
                 className="mx-auto rounded-md shadow-md h-40 object-contain"
               />
+              {recipeError?.image && (
+                <p className="text-red-500 mt-1">{recipeError.image}</p>
+              )}
               <Button
                 type="button"
                 element="Remove Image"
@@ -218,6 +221,9 @@ export default function RecipeForm({
             <>
               <p className="text-lg font-semibold">Drag and Drop Image Here</p>
               <p className="text-sec-200">or click to select one</p>
+              {recipeError?.image && (
+                <p className="text-red-500 mt-1">{recipeError.image}</p>
+              )}
             </>
           )}
         </div>

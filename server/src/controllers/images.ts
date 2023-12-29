@@ -36,10 +36,29 @@ const imageFileFilter = (
 export const imageUploadMulter = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 5 * 1024 * 1024, // file size limit is 5mb
+    fileSize: 20 * 1024 * 1024, // file size limit is 20mb
   },
   fileFilter: imageFileFilter,
 });
+
+export const imageUploadMiddleware = (
+  req: Request,
+  res: Response,
+  next: any
+) => {
+  try {
+    imageUploadMulter.single("image")(req, res, (err) => {
+      if (err) {
+        res.status(400).json({ image: err.message });
+      } else {
+        next();
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ image: "Failed uploading image" });
+  }
+};
 
 /**
  * to set the header content type based on the file extension
@@ -80,7 +99,7 @@ export const uploadImage = async (
     let image = req.file;
 
     if (!image) {
-      res.status(400).send("Image file is missing.");
+      res.status(400).json({ image: "Image file is missing." });
       return false;
     }
 
@@ -103,7 +122,7 @@ export const uploadImage = async (
     return true;
   } catch (err) {
     console.error(err);
-    res.status(500).send("Internal server error");
+    res.status(500).json({ image: "Failed uploading image" });
     return false;
   }
 };
@@ -129,7 +148,7 @@ export const getImage = async (
     const imageName = req.params.imageName;
 
     if (!imageName) {
-      res.status(400).send("Image name parameter is missing.");
+      res.status(400).json({ image: "Image name parameter is missing." });
       return false;
     }
 
@@ -178,7 +197,7 @@ export const getImage = async (
     return true;
   } catch (err) {
     console.error(err);
-    res.status(500).send("Internal server error");
+    res.status(500).json({ image: "Failed retrieving image" });
     return false;
   }
 };
@@ -196,7 +215,7 @@ export const deleteImage = async (
     const imageName = req.params.imageName;
 
     if (!imageName) {
-      res.status(400).send("Image name parameter is missing.");
+      res.status(400).json({ image: "Image name parameter is missing." });
       return false;
     }
 
@@ -206,7 +225,7 @@ export const deleteImage = async (
     return true;
   } catch (err) {
     console.error(err);
-    res.status(500).send("Internal server error");
+    res.status(500).json({ image: "Failed deleting image" });
     return false;
   }
 };
