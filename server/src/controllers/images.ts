@@ -5,6 +5,7 @@ import { Readable } from "stream";
 import { Bucket } from "@google-cloud/storage/build/cjs/src/bucket";
 import { Request, Response } from "express";
 import dotenv from "dotenv";
+import sharp from "sharp";
 dotenv.config();
 
 const storage = new Storage();
@@ -76,17 +77,21 @@ export const uploadImage = async (
   res: Response
 ): Promise<boolean> => {
   try {
-    const image = req.file;
+    let image = req.file;
 
     if (!image) {
       res.status(400).send("Image file is missing.");
       return false;
     }
 
-    const imageName = `${uuidv4()}_${image.originalname}`;
+    // compress the image
+    const { fieldname, originalname, encoding, mimetype, buffer } = image;
+    const compressedImage = await sharp(buffer).resize(800).toBuffer();
+
+    const imageName = `${uuidv4()}_${originalname}`;
     const blob = bucket.file(imageName);
 
-    const stream = Readable.from(image.buffer);
+    const stream = Readable.from(compressedImage);
     const uploadStream = blob.createWriteStream({ resumable: false });
 
     await new Promise((resolve, reject) => {
@@ -109,7 +114,7 @@ interface CachedImage {
 }
 
 const imageCache = new Map<string, CachedImage>();
-const maxCacheAge = 60 * 60 * 1000;
+const maxCacheAge = 60 * 1000;
 
 /**
  * get image files

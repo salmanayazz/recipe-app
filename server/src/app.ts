@@ -1,4 +1,3 @@
-import createError from "http-errors";
 import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
@@ -7,11 +6,11 @@ import cors from "cors";
 import mongoose from "mongoose";
 import session from "express-session";
 import dotenv from "dotenv";
-
 import authRouter from "./routes/auth";
 import recipesRouter from "./routes/recipes";
 import imagesRouter from "./routes/images";
 import MongoStore from "connect-mongo";
+import compression from "compression";
 
 dotenv.config();
 
@@ -22,6 +21,7 @@ export default app;
 if (process.env.NODE_ENV !== "test") {
   app.use(logger("dev"));
 }
+app.use(compression({ level: 4 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
