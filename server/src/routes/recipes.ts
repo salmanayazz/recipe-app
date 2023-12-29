@@ -46,6 +46,40 @@ router.get("/", async function (req: Request, res: Response) {
   }
 });
 
+router.delete(
+  "/:recipeID",
+  checkAuthenticated,
+  async function (req: Request, res: Response) {
+    try {
+      const recipe: Recipe | null = await RecipeModel.findOne({
+        _id: req.params.recipeID,
+        username: req.session.username,
+      });
+
+      if (!recipe) {
+        return res.status(404).json({ other: "Recipe not found" });
+      }
+
+      if (recipe.imageName) {
+        // delete the image
+        req.params.imageName = recipe.imageName;
+        if (!(await deleteImage(req, res))) {
+          return;
+        }
+      }
+
+      await RecipeModel.deleteOne({
+        _id: recipe._id,
+      });
+
+      res.status(200).send("Recipe deleted successfully");
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ other: "Internal server error" });
+    }
+  }
+);
+
 router.use(
   "/",
   checkAuthenticated,
@@ -182,36 +216,6 @@ router.put("/:recipeID", async function (req: ImageRequest, res: Response) {
 
     await recipe.save();
     res.status(200).send("Recipe updated successfully");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ other: "Internal server error" });
-  }
-});
-
-router.delete("/:recipeID", async function (req: Request, res: Response) {
-  try {
-    const recipe: Recipe | null = await RecipeModel.findOne({
-      _id: req.params.recipeID,
-      username: req.session.username,
-    });
-
-    if (!recipe) {
-      return res.status(404).json({ other: "Recipe not found" });
-    }
-
-    if (recipe.imageName) {
-      // delete the image
-      req.params.imageName = recipe.imageName;
-      if (!(await deleteImage(req, res))) {
-        return;
-      }
-    }
-
-    await RecipeModel.deleteOne({
-      _id: recipe._id,
-    });
-
-    res.status(200).send("Recipe deleted successfully");
   } catch (error) {
     console.error(error);
     res.status(500).json({ other: "Internal server error" });
