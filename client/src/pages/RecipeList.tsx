@@ -53,7 +53,7 @@ export default function RecipeList() {
               </div>
             ) : (
               <div className="flex flex-1 justify-center items-center">
-                <LoadingAnimation />
+                {recipeState.fetchingRecipes && <LoadingAnimation />}
               </div>
             )}
           </>
