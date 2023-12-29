@@ -35,15 +35,17 @@ export default function RecipeList() {
         </div>
         <HorizontalLine />
 
-        {recipeState.fetchingRecipes ? (
+        {recipeError ? (
           <div className="flex flex-1 justify-center items-center">
-            <LoadingAnimation />
+            <h1 className="text-red-500 text-3xl font-bold">
+              {recipeError.other}
+            </h1>
           </div>
         ) : (
           <>
-            {recipeError ? (
+            {recipeState.fetchingRecipes ? (
               <div className="flex flex-1 justify-center items-center">
-                <h1 className="text-red-500">{recipeError.other}</h1>
+                <LoadingAnimation />
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
