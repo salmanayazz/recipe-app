@@ -103,6 +103,14 @@ export const uploadImage = async (
   }
 };
 
+interface CachedImage {
+  data: Buffer;
+  timestamp: number;
+}
+
+const imageCache = new Map<string, CachedImage>();
+const maxCacheAge = 60 * 60 * 1000;
+
 /**
  * get image files
  * @returns
@@ -120,18 +128,48 @@ export const getImage = async (
       return false;
     }
 
+    // if the image is in the cache
+    if (imageCache.has(imageName)) {
+      const cachedImage = imageCache.get(imageName);
+      const currentTime = Date.now();
+
+      if (cachedImage) {
+        // refresh the timestamp
+        cachedImage.timestamp = currentTime;
+        res.send(cachedImage.data);
+        return true;
+      }
+    }
+
+    // remove old images from the cache
+    imageCache.forEach((cachedImage, key) => {
+      if (cachedImage.timestamp < Date.now() - maxCacheAge) {
+        imageCache.delete(key);
+      }
+    });
+
     const image = bucket.file(imageName);
 
     res.setHeader("Content-Type", getContentType(imageName));
 
     const readStream = image.createReadStream();
-    readStream.pipe(res);
+    const chunks: Buffer[] = [];
+
+    readStream.on("data", (chunk) => {
+      chunks.push(chunk);
+    });
+
+    readStream.on("end", () => {
+      const imageData = Buffer.concat(chunks);
+      // cache image
+      imageCache.set(imageName, { data: imageData, timestamp: Date.now() });
+      res.send(imageData);
+    });
 
     readStream.on("error", (err) => {
-      console.error(err);
-      res.status(500).send("Internal server error");
-      return false;
+      throw err;
     });
+
     return true;
   } catch (err) {
     console.error(err);
