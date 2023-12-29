@@ -200,6 +200,8 @@ export const deleteImage = async (
       return false;
     }
 
+    imageCache.delete(imageName);
+
     await bucket.file(imageName).delete();
     return true;
   } catch (err) {
