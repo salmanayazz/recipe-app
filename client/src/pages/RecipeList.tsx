@@ -43,17 +43,17 @@ export default function RecipeList() {
           </div>
         ) : (
           <>
-            {recipeState.fetchingRecipes ? (
-              <div className="flex flex-1 justify-center items-center">
-                <LoadingAnimation />
-              </div>
-            ) : (
+            {recipes ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {recipes?.map((recipe: Recipe) => (
+                {recipes.map((recipe: Recipe) => (
                   <div key={recipe._id}>
                     <RecipeCard recipe={recipe} />
                   </div>
                 ))}
+              </div>
+            ) : (
+              <div className="flex flex-1 justify-center items-center">
+                <LoadingAnimation />
               </div>
             )}
           </>
