@@ -28,9 +28,16 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
     searchParams?: SearchParams
   ): Promise<RecipeError | undefined> => {
     try {
-      setRecipeState({ ...recipeState });
+      setRecipeState({ ...recipeState, fetchingRecipes: true });
       const response = await axiosInstance.get(`recipes`, {
         params: searchParams,
+      });
+
+      setRecipeState({
+        ...recipeState,
+        recipes: response.data,
+        fetchingRecipes: false,
+        fetchingImages: true,
       });
 
       const recipesImgsToLoad: Recipe[] = [];
@@ -45,11 +52,6 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
         } else {
           recipesImgsToLoad.push(recipe);
         }
-      });
-
-      setRecipeState({
-        ...recipeState,
-        recipes: response.data,
       });
 
       // get the image for each recipe that has updated
@@ -78,9 +80,14 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
           );
           return updatedRecipe ? { ...r, image: updatedRecipe.image } : r;
         });
-        return { ...prevState, recipes: updatedRecipes };
+        return { ...prevState, recipes: updatedRecipes, fetchingImages: false };
       });
     } catch (error: any) {
+      setRecipeState({
+        ...recipeState,
+        fetchingRecipes: false,
+        fetchingImages: false,
+      });
       return error?.response?.data || { other: error?.message };
     }
     return;
