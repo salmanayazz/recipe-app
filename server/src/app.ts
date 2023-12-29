@@ -10,7 +10,6 @@ import authRouter from "./routes/auth";
 import recipesRouter from "./routes/recipes";
 import imagesRouter from "./routes/images";
 import MongoStore from "connect-mongo";
-import compression from "compression";
 
 dotenv.config();
 
@@ -21,7 +20,7 @@ export default app;
 if (process.env.NODE_ENV !== "test") {
   app.use(logger("dev"));
 }
-app.use(compression({ level: 4 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
