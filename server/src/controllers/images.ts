@@ -87,11 +87,10 @@ export const uploadImage = async (
     const blob = bucket.file(imageName);
 
     const stream = Readable.from(image.buffer);
-    stream.pipe(blob.createWriteStream({ resumable: false }));
+    const uploadStream = blob.createWriteStream({ resumable: false });
 
     await new Promise((resolve, reject) => {
-      stream.on("end", resolve);
-      stream.on("error", reject);
+      stream.pipe(uploadStream).on("error", reject).on("finish", resolve);
     });
 
     // add the image name to the request object so it can be saved in the database
