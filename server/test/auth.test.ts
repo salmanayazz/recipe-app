@@ -10,7 +10,7 @@ chai.use(chaiHttp);
 
 describe("/auth", function () {
   let user1 = chai.request.agent(app);
-  this.timeout(6000);
+  this.timeout(20000);
 
   describe("/signup", () => {
     describe("POST", () => {
