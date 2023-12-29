@@ -12,19 +12,34 @@ export interface Recipe {
 
 export interface RecipesState {
   recipes: Recipe[];
+  fetchingRecipes: boolean;
+  fetchingImages: boolean;
 }
 
 export interface RecipesContextType {
   recipeState: RecipesState;
-  fetchRecipes: (searchParams?: SearchParams) => void;
-  createRecipe: (recipe: Recipe) => void;
-  updateRecipe: (recipeID: string, recipe: Recipe) => void;
-  deleteRecipe: (recipeId: string) => void;
+  fetchRecipes: (
+    searchParams?: SearchParams
+  ) => Promise<RecipeError | undefined>;
+  createRecipe: (recipe: Recipe) => Promise<RecipeError | undefined>;
+  updateRecipe: (
+    recipeID: string,
+    recipe: Recipe
+  ) => Promise<RecipeError | undefined>;
+  deleteRecipe: (recipeId: string) => Promise<RecipeError | undefined>;
 }
 
 export interface SearchParams {
   recipeName?: string;
   username?: string;
+}
+
+export interface RecipeError {
+  name?: string;
+  ingredients?: string;
+  directions?: string;
+  image?: string;
+  other?: string;
 }
 
 export const useRecipes = () => {
@@ -36,5 +51,5 @@ export const useRecipes = () => {
 };
 
 export const RecipesContext = createContext<RecipesContextType | undefined>(
-  undefined,
+  undefined
 );

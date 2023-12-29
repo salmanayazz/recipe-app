@@ -16,7 +16,7 @@ function checkAuthenticated(req: Request, res: Response, next: NextFunction) {
     return next();
   }
 
-  res.status(401).send("Unauthorized");
+  res.status(401).json({ other: "Unauthorized" });
 }
 
 router.get("/", async function (req: Request, res: Response) {
@@ -42,7 +42,7 @@ router.get("/", async function (req: Request, res: Response) {
     res.json(await RecipeModel.find(query).limit(24));
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal server error");
+    res.status(500).json({ other: "Internal server error" });
   }
 });
 
@@ -68,10 +68,42 @@ router.use(
         })
       );
 
+      // validate the request body
+      let errorResponse = {};
+      const name = req.body.name;
+      if (!name || name.length <= 0) {
+        errorResponse = { name: "Name is required" };
+      }
+
+      const ingredients = req.body.ingredients;
+      if (
+        !ingredients ||
+        !Array.isArray(ingredients) ||
+        ingredients.length <= 0
+      ) {
+        errorResponse = {
+          ...errorResponse,
+          ingredients: "Need at least one ingredient",
+        };
+      }
+
+      const directions = req.body.directions;
+      if (!directions || !Array.isArray(directions) || directions.length <= 0) {
+        errorResponse = {
+          ...errorResponse,
+          directions: "Need at least one direction",
+        };
+      }
+
+      // return the errorResponse if there are any errors
+      if (Object.keys(errorResponse).length > 0) {
+        return res.status(400).json(errorResponse);
+      }
+
       next();
     } catch (error) {
       console.error(error);
-      res.status(500).send("Internal server error");
+      res.status(500).json({ other: "Internal server error" });
     }
   }
 );
@@ -97,7 +129,7 @@ router.post("/", async function (req: ImageRequest, res: Response) {
     res.status(201).send("Recipe created successfully");
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal server error");
+    res.status(500).json({ other: "Internal server error" });
   }
 });
 
@@ -118,7 +150,7 @@ router.put("/:recipeID", async function (req: ImageRequest, res: Response) {
     );
 
     if (!recipe) {
-      return res.status(404).send("Recipe not found");
+      return res.status(404).json({ other: "Recipe not found" });
     }
 
     if (recipe.imageName && req.file) {
@@ -152,7 +184,7 @@ router.put("/:recipeID", async function (req: ImageRequest, res: Response) {
     res.status(200).send("Recipe updated successfully");
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal server error");
+    res.status(500).json({ other: "Internal server error" });
   }
 });
 
@@ -164,7 +196,7 @@ router.delete("/:recipeID", async function (req: Request, res: Response) {
     });
 
     if (!recipe) {
-      return res.status(404).send("Recipe not found");
+      return res.status(404).json({ other: "Recipe not found" });
     }
 
     if (recipe.imageName) {
@@ -182,7 +214,7 @@ router.delete("/:recipeID", async function (req: Request, res: Response) {
     res.status(200).send("Recipe deleted successfully");
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal server error");
+    res.status(500).json({ other: "Internal server error" });
   }
 });
 

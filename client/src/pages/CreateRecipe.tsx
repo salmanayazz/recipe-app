@@ -7,7 +7,7 @@ import Header1 from "../components/headers/Header1";
 import HorizontalLine from "../components/HorizontalLine";
 import RecipeForm from "../components/RecipeForm";
 
-import { Recipe } from "../contexts/recipes/RecipesContext";
+import { Recipe, RecipeError } from "../contexts/recipes/RecipesContext";
 import { useRecipes } from "../contexts/recipes/RecipesContext";
 
 export default function CreateRecipe() {
@@ -23,13 +23,12 @@ export default function CreateRecipe() {
     new TextValue(""),
   ]);
 
-  function afterSubmit(recipe: Recipe) {
-    try {
-      createRecipe(recipe);
-    } catch (e) {
-      console.log(e);
-      return;
+  async function afterSubmit(recipe: Recipe): Promise<RecipeError | undefined> {
+    const response = await createRecipe(recipe);
+    if (response) {
+      return response;
     }
+
     returnHome();
   }
 

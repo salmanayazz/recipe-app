@@ -6,6 +6,7 @@ interface TextInputProps {
   placeholder?: string;
   textValue?: string;
   error?: string;
+  errorOutline?: boolean;
   required?: boolean;
   hidden?: boolean; // for password inputs
   onChange: (value: string) => void;
@@ -27,6 +28,7 @@ export default function TextInput({
   onKeyDown,
   leftIcon,
   rightIcon,
+  errorOutline = false,
 }: TextInputProps) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -56,7 +58,7 @@ export default function TextInput({
           autoFocus={autoFocus}
           autoComplete="off"
           className={`bg-pri-300 text-sec-100 outline-none border-2 ${
-            error ? "border-red-500" : "border-pri-300"
+            error || errorOutline ? "border-red-500" : "border-pri-300"
           } rounded-md p-1.5 ${
             hidden ? "pr-10" : "pr-2" // if hidden, add padding to the right for the eye icon
           } focus:bg-pri-200 w-full ${

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Recipe } from "../contexts/recipes/RecipesContext";
+import { Recipe, RecipeError } from "../contexts/recipes/RecipesContext";
 
 import DynamicInputList, { TextValue } from "./DynamicInputList";
 import TextInput from "./TextInput";
@@ -34,7 +34,7 @@ interface RecipeFormProps {
   setIngredients: React.Dispatch<React.SetStateAction<TextValue[]>>;
   directions: TextValue[];
   setDirections: React.Dispatch<React.SetStateAction<TextValue[]>>;
-  afterSubmit: (recipe: Recipe) => void;
+  afterSubmit: (recipe: Recipe) => Promise<RecipeError | undefined>;
 }
 
 export default function RecipeForm({
@@ -48,6 +48,10 @@ export default function RecipeForm({
   afterSubmit,
 }: RecipeFormProps) {
   const [image, setImage] = useState<File | undefined>(undefined);
+  const [recipeError, setRecipeError] = useState<RecipeError | undefined>(
+    undefined
+  );
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     // load the recipe image data if it exists
@@ -69,14 +73,14 @@ export default function RecipeForm({
   /**
    * handles the submit of the form and creates a new recipe
    */
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const ingredientValues: string[] = removeEmpty(
-      ingredients.map((ingredient) => ingredient.value),
+      ingredients.map((ingredient) => ingredient.value)
     );
     const directionValues: string[] = removeEmpty(
-      directions.map((direction) => direction.value),
+      directions.map((direction) => direction.value)
     );
 
     const newRecipe: Recipe = {
@@ -86,7 +90,9 @@ export default function RecipeForm({
       image: image,
     };
 
-    afterSubmit(newRecipe);
+    setLoading(true);
+    setRecipeError(await afterSubmit(newRecipe));
+    setLoading(false);
   }
 
   /**
@@ -149,6 +155,7 @@ export default function RecipeForm({
           }}
           textValue={name}
           autoFocus={true}
+          error={recipeError?.name}
         />
       </div>
 
@@ -162,6 +169,7 @@ export default function RecipeForm({
           increaseCount={() => {
             setIngredients(ingredients.concat([new TextValue("")]));
           }}
+          error={recipeError?.ingredients}
         />
       </div>
 
@@ -176,6 +184,7 @@ export default function RecipeForm({
             setDirections(directions.concat([new TextValue("")]));
           }}
           orderedList={true}
+          error={recipeError?.directions}
         />
       </div>
 
@@ -227,7 +236,15 @@ export default function RecipeForm({
           }}
         />
 
-        <Button type="submit" element="Save" />
+        <Button
+          type="submit"
+          element="Save"
+          error={recipeError?.other}
+          onClick={() => {
+            setRecipeError(undefined);
+          }}
+          loading={loading}
+        />
       </div>
     </form>
   );
