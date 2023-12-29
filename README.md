@@ -1,6 +1,6 @@
 # Recipe App
 
-This application is built with a variety of technologies including **React**, **Node.js**, **Express.js**, **Google Cloud Platform**, **Docker**, **GitHub Actions**, **Apache**, and styled with **TailwindCSS**.
+This application is built with a variety of technologies including **React**, **Node.js**, **Express**, **MongoDB**, **Google Cloud Platform**, **Docker**, **GitHub Actions**, **Apache**, and styled with **TailwindCSS**. See the repository sidebar for a link to the live demo.
 
 ## Features
 
@@ -8,7 +8,7 @@ This application is built with a variety of technologies including **React**, **
 - **Image Upload**: Users can upload images for their recipes. Image handling is done using Google Cloud Storage.
 - **View Recipes**: Users can view recipes created by other users.
 - **Authentication**: User authentication is handled securely using the bcrypt library. This ensures that user passwords are securely hashed before being stored in the database.
-- **HTTPS**: The application is served over HTTPS with Apache and Certbot using a Let's Encrypt certificate.
+- **HTTPS**: The live demo of the application is served over HTTPS with Apache and Certbot using a Let's Encrypt certificate.
 
 ## Environment Variables
 
