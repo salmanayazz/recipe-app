@@ -13,6 +13,7 @@ interface DynamicInputListProps {
   onChange: (index: number, value: string) => void;
   increaseCount: () => void;
   orderedList?: boolean;
+  error?: string;
 }
 
 export class TextValue {
@@ -43,6 +44,7 @@ export default function DynamicInputList({
   onChange,
   increaseCount,
   orderedList = false,
+  error,
 }: DynamicInputListProps) {
   // array of JSX elements that then gets passed to list component to be rendered
   const [inputs, setInputs] = useState<JSX.Element[]>([]);
@@ -58,7 +60,7 @@ export default function DynamicInputList({
         increaseCount();
       }
     },
-    [increaseCount],
+    [increaseCount]
   );
 
   /**
@@ -78,6 +80,7 @@ export default function DynamicInputList({
             // autofocus if last input but not first
             autoFocus={i === textValues.length - 1 && i !== 0}
             onKeyDown={listenForEnterKey}
+            errorOutline={error ? true : false}
           />
 
           <div
@@ -96,7 +99,7 @@ export default function DynamicInputList({
     }
 
     return newInputs;
-  }, [listenForEnterKey, onChange, removeAt, textValues]);
+  }, [error, listenForEnterKey, onChange, removeAt, textValues]);
 
   /**
    * regenerate array when textValues updates
@@ -112,9 +115,9 @@ export default function DynamicInputList({
       <AddButton
         onClick={() => {
           increaseCount();
-          //TODO: set autofocus on last input after button press
         }}
       />
+      {error && <p className="text-red-500">{error}</p>}
     </div>
   );
 }

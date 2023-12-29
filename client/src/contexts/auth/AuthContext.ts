@@ -9,11 +9,23 @@ export interface AuthState {
   loading: boolean;
 }
 
+export interface AuthError {
+  username?: string;
+  password?: string;
+  other?: string;
+}
+
 export interface AuthContextType {
   authState: AuthState;
-  signupUser: (userData: { username: string; password: string }) => void;
-  loginUser: (userData: { username: string; password: string }) => void;
-  logoutUser: () => void;
+  signupUser: (userData: {
+    username: string;
+    password: string;
+  }) => Promise<AuthError | undefined>;
+  loginUser: (userData: {
+    username: string;
+    password: string;
+  }) => Promise<AuthError | undefined>;
+  logoutUser: () => Promise<AuthError | undefined>;
 }
 
 export const useAuth = () => {
@@ -25,5 +37,5 @@ export const useAuth = () => {
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined,
+  undefined
 );

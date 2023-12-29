@@ -14,8 +14,15 @@ async function getUser(req: UserRequest, res: Response, next: NextFunction) {
     const username = req.body.username;
     const password = req.body.password;
 
-    if (!username || !password) {
-      return res.status(400).send("Missing username or password");
+    if (!username && !password) {
+      return res.status(400).json({
+        username: "Username is required",
+        password: "Password is required",
+      });
+    } else if (!username) {
+      return res.status(400).json({ username: "Username is required" });
+    } else if (!password) {
+      return res.status(400).json({ password: "Password is required" });
     }
 
     const user = await UserModel.findOne({ username: username });
@@ -25,7 +32,7 @@ async function getUser(req: UserRequest, res: Response, next: NextFunction) {
     next();
   } catch (err) {
     console.log(err);
-    return res.status(500).send("Internal server error");
+    return res.status(500).json({ other: "Internal server error" });
   }
 }
 
@@ -39,7 +46,7 @@ router.post(
       const password = req.body.password;
 
       if (user) {
-        return res.status(409).send("User already exists");
+        return res.status(409).json({ username: "Username is taken" });
       }
 
       const salt = await bcrypt.genSalt(10);
@@ -55,7 +62,7 @@ router.post(
       return res.status(201).send("User created");
     } catch (err) {
       console.log(err);
-      return res.status(500).send("Internal server error");
+      return res.status(500).json({ other: "Internal server error" });
     }
   }
 );
@@ -70,11 +77,11 @@ router.post(
       const password = req.body.password;
 
       if (!user) {
-        return res.status(404).send("User does not exist");
+        return res.status(404).json({ username: "User does not exist" });
       }
 
       if (!(await bcrypt.compare(password, user.password))) {
-        return res.status(401).send("Incorrect password");
+        return res.status(401).json({ password: "Incorrect password" });
       }
 
       req.session.username = username;
@@ -82,7 +89,7 @@ router.post(
       return res.status(200).json({ user: { username: req.session.username } });
     } catch (err) {
       console.log(err);
-      return res.status(500).send("Internal server error");
+      return res.status(500).json({ other: "Internal server error" });
     }
   }
 );
@@ -92,23 +99,23 @@ router.get("/login", async function (req: Request, res: Response) {
     if (req.session.username) {
       return res.status(200).json({ user: { username: req.session.username } });
     } else {
-      return res.status(401).send("No valid session");
+      return res.status(401).json({ other: "No valid session" });
     }
   } catch (err) {
     console.log(err);
-    return res.status(500).send("Internal server error");
+    return res.status(500).json({ other: "Internal server error" });
   }
 });
 
 router.delete("/logout", function (req: Request, res: Response) {
   if (!req.session.username) {
-    return res.status(401).send("No valid session");
+    return res.status(401).json({ other: "No valid session" });
   }
 
   req.session.destroy(function (err) {
     if (err) {
       console.error(err);
-      return res.status(500).send("Internal server error");
+      return res.status(500).json({ other: "Internal server error" });
     }
     return res.status(200).send("Successfully logged out");
   });

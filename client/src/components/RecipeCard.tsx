@@ -1,13 +1,16 @@
 import { NavLink } from "react-router-dom";
-import { Recipe } from "../contexts/recipes/RecipesContext";
+import { Recipe, useRecipes } from "../contexts/recipes/RecipesContext";
 import Header2 from "./headers/Header2";
 import Paragraph from "./Paragraph";
+import LoadingAnimation from "./LoadingAnimation";
 
 interface RecipeCardProps {
   recipe: Recipe;
 }
 
 export default function RecipeCard({ recipe }: RecipeCardProps) {
+  const { recipeState } = useRecipes();
+
   return recipe._id ? (
     <NavLink
       key={recipe._id}
@@ -21,7 +24,9 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
         />
       ) : (
         /* creates space to keep card height consistent */
-        <div className="w-full h-40"></div>
+        <div className="flex justify-center items-center w-full h-40">
+          {recipeState.fetchingImages && <LoadingAnimation />}
+        </div>
       )}
 
       <div>

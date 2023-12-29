@@ -4,6 +4,7 @@ import {
   RecipesState,
   SearchParams,
   RecipesContext,
+  RecipeError,
 } from "./RecipesContext";
 import { axiosInstance } from "../AxiosInstance";
 
@@ -13,6 +14,8 @@ interface RecipesProviderProps {
 
 const defaultRecipesState: RecipesState = {
   recipes: [],
+  fetchingRecipes: false,
+  fetchingImages: false,
 };
 
 export const RecipesProvider: React.FC<RecipesProviderProps> = ({
@@ -21,10 +24,20 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
   const [recipeState, setRecipeState] =
     useState<RecipesState>(defaultRecipesState);
 
-  const fetchRecipes = async (searchParams?: SearchParams) => {
+  const fetchRecipes = async (
+    searchParams?: SearchParams
+  ): Promise<RecipeError | undefined> => {
     try {
+      setRecipeState({ ...recipeState, fetchingRecipes: true });
       const response = await axiosInstance.get(`recipes`, {
         params: searchParams,
+      });
+
+      setRecipeState({
+        ...recipeState,
+        recipes: response.data,
+        fetchingRecipes: false,
+        fetchingImages: true,
       });
 
       const recipesImgsToLoad: Recipe[] = [];
@@ -32,7 +45,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
       // keep the recipe images from the state that haven't been updated
       response.data.forEach((recipe: Recipe) => {
         const existingRecipe = recipeState.recipes.find(
-          (r: Recipe) => r.imageName === recipe.imageName,
+          (r: Recipe) => r.imageName === recipe.imageName
         );
         if (existingRecipe) {
           recipe.image = existingRecipe.image;
@@ -41,45 +54,48 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
         }
       });
 
-      setRecipeState({ ...recipeState, recipes: response.data });
-
       // get the image for each recipe that has updated
       const newRecipesImgs = await Promise.all(
         recipesImgsToLoad.map(async (recipe: Recipe) => {
-          try {
-            if (recipe.imageName) {
-              const response = await fetch(
-                `${import.meta.env.VITE_SERVER_URL}/images/${recipe.imageName}`,
-              );
-              const blob = await response.blob();
+          if (recipe.imageName) {
+            const response = await fetch(
+              `${import.meta.env.VITE_SERVER_URL}/images/${recipe.imageName}`
+            );
+            const blob = await response.blob();
 
-              recipe.image = new File([blob], recipe.imageName, {
-                type: blob.type,
-              });
-            }
-          } catch (error) {
-            console.error(error);
+            recipe.image = new File([blob], recipe.imageName, {
+              type: blob.type,
+            });
           }
+
           return recipe;
-        }),
+        })
       );
 
       // add the new images to the recipes state
       setRecipeState((prevState) => {
         const updatedRecipes = prevState.recipes.map((r: Recipe) => {
           const updatedRecipe = newRecipesImgs.find(
-            (newRecipe) => newRecipe.imageName === r.imageName,
+            (newRecipe) => newRecipe.imageName === r.imageName
           );
           return updatedRecipe ? { ...r, image: updatedRecipe.image } : r;
         });
-        return { ...prevState, recipes: updatedRecipes };
+        return { ...prevState, recipes: updatedRecipes, fetchingImages: false };
       });
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      setRecipeState({
+        ...recipeState,
+        fetchingRecipes: false,
+        fetchingImages: false,
+      });
+      return error?.response?.data || { other: error?.message };
     }
+    return;
   };
 
-  const createRecipe = async (recipe: Recipe) => {
+  const createRecipe = async (
+    recipe: Recipe
+  ): Promise<RecipeError | undefined> => {
     try {
       const formData = new FormData();
 
@@ -99,12 +115,16 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
       });
 
       fetchRecipes();
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      return error?.response?.data || { other: error?.message };
     }
+    return;
   };
 
-  const updateRecipe = async (recipeID: string, recipe: Recipe) => {
+  const updateRecipe = async (
+    recipeID: string,
+    recipe: Recipe
+  ): Promise<RecipeError | undefined> => {
     try {
       const formData = new FormData();
 
@@ -123,20 +143,24 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
         },
       });
       fetchRecipes();
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      return error?.response?.data || { other: error?.message };
     }
+    return;
   };
 
-  const deleteRecipe = async (recipeId: string) => {
+  const deleteRecipe = async (
+    recipeId: string
+  ): Promise<RecipeError | undefined> => {
     try {
       await axiosInstance.delete(
-        `${import.meta.env.VITE_SERVER_URL}/recipes/${recipeId}`,
+        `${import.meta.env.VITE_SERVER_URL}/recipes/${recipeId}`
       );
       fetchRecipes();
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      return error?.response?.data || { other: error?.message };
     }
+    return;
   };
 
   return (
