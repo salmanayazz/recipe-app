@@ -11,6 +11,7 @@ import dotenv from "dotenv";
 import authRouter from "./routes/auth";
 import recipesRouter from "./routes/recipes";
 import imagesRouter from "./routes/images";
+import MongoStore from "connect-mongo";
 
 dotenv.config();
 
@@ -55,8 +56,17 @@ app.use(
   session({
     name: "session",
     secret: process.env.SESSION_SECRET || "secret",
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      collectionName: "sessions",
+    }),
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
   })
 );
 
