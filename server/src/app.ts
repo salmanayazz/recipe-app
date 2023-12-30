@@ -55,16 +55,20 @@ app.use(
   session({
     name: "session",
     secret: process.env.SESSION_SECRET || "secret",
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
-      collectionName: "sessions",
-    }),
+    store:
+      process.env.NODE_ENV === "test" // use in-memory store for testing
+        ? (undefined as any)
+        : MongoStore.create({
+            mongoUrl: process.env.MONGODB_URI,
+            collectionName: "sessions",
+          }),
     resave: false,
     saveUninitialized: false,
+
     cookie: {
       httpOnly: true,
       secure: "auto",
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
     },
   })
 );
