@@ -1,4 +1,5 @@
-FROM node:16 AS builder
+# bullseye used to make mongodb-memory-server work
+FROM node:18-bullseye AS builder
 
 WORKDIR /usr/src/app
 
@@ -7,9 +8,6 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
-
-# for mongodb-memory-server to work
-RUN apt-get install libcurl4
 
 RUN npm test
 

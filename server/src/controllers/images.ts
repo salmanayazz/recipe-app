@@ -5,6 +5,7 @@ import { Readable } from "stream";
 import { Bucket } from "@google-cloud/storage/build/cjs/src/bucket";
 import { Request, Response } from "express";
 import dotenv from "dotenv";
+import sharp from "sharp";
 dotenv.config();
 
 const storage = new Storage();
@@ -35,10 +36,29 @@ const imageFileFilter = (
 export const imageUploadMulter = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 5 * 1024 * 1024, // file size limit is 5mb
+    fileSize: 20 * 1024 * 1024, // file size limit is 20mb
   },
   fileFilter: imageFileFilter,
 });
+
+export const imageUploadMiddleware = (
+  req: Request,
+  res: Response,
+  next: any
+) => {
+  try {
+    imageUploadMulter.single("image")(req, res, (err) => {
+      if (err) {
+        res.status(400).json({ image: err.message });
+      } else {
+        next();
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ image: "Failed uploading image" });
+  }
+};
 
 /**
  * to set the header content type based on the file extension
@@ -76,22 +96,25 @@ export const uploadImage = async (
   res: Response
 ): Promise<boolean> => {
   try {
-    const image = req.file;
+    let image = req.file;
 
     if (!image) {
-      res.status(400).send("Image file is missing.");
+      res.status(400).json({ image: "Image file is missing." });
       return false;
     }
 
-    const imageName = `${uuidv4()}_${image.originalname}`;
+    // compress the image
+    const { fieldname, originalname, encoding, mimetype, buffer } = image;
+    const compressedImage = await sharp(buffer).resize(800).toBuffer();
+
+    const imageName = `${uuidv4()}_${originalname}`;
     const blob = bucket.file(imageName);
 
-    const stream = Readable.from(image.buffer);
-    stream.pipe(blob.createWriteStream({ resumable: false }));
+    const stream = Readable.from(compressedImage);
+    const uploadStream = blob.createWriteStream({ resumable: false });
 
     await new Promise((resolve, reject) => {
-      stream.on("end", resolve);
-      stream.on("error", reject);
+      stream.pipe(uploadStream).on("error", reject).on("finish", resolve);
     });
 
     // add the image name to the request object so it can be saved in the database
@@ -99,10 +122,18 @@ export const uploadImage = async (
     return true;
   } catch (err) {
     console.error(err);
-    res.status(500).send("Internal server error");
+    res.status(500).json({ image: "Failed uploading image" });
     return false;
   }
 };
+
+interface CachedImage {
+  data: Buffer;
+  timestamp: number;
+}
+
+const imageCache = new Map<string, CachedImage>();
+const maxCacheAge = 60 * 1000;
 
 /**
  * get image files
@@ -117,26 +148,56 @@ export const getImage = async (
     const imageName = req.params.imageName;
 
     if (!imageName) {
-      res.status(400).send("Image name parameter is missing.");
+      res.status(400).json({ image: "Image name parameter is missing." });
       return false;
     }
+
+    // if the image is in the cache
+    if (imageCache.has(imageName)) {
+      const cachedImage = imageCache.get(imageName);
+      const currentTime = Date.now();
+
+      if (cachedImage) {
+        // refresh the timestamp
+        cachedImage.timestamp = currentTime;
+        res.send(cachedImage.data);
+        return true;
+      }
+    }
+
+    // remove old images from the cache
+    imageCache.forEach((cachedImage, key) => {
+      if (cachedImage.timestamp < Date.now() - maxCacheAge) {
+        imageCache.delete(key);
+      }
+    });
 
     const image = bucket.file(imageName);
 
     res.setHeader("Content-Type", getContentType(imageName));
 
     const readStream = image.createReadStream();
-    readStream.pipe(res);
+    const chunks: Buffer[] = [];
+
+    readStream.on("data", (chunk) => {
+      chunks.push(chunk);
+    });
+
+    readStream.on("end", () => {
+      const imageData = Buffer.concat(chunks);
+      // cache image
+      imageCache.set(imageName, { data: imageData, timestamp: Date.now() });
+      res.send(imageData);
+    });
 
     readStream.on("error", (err) => {
-      console.error(err);
-      res.status(500).send("Internal server error");
-      return false;
+      throw err;
     });
+
     return true;
   } catch (err) {
     console.error(err);
-    res.status(500).send("Internal server error");
+    res.status(500).json({ image: "Failed retrieving image" });
     return false;
   }
 };
@@ -154,15 +215,17 @@ export const deleteImage = async (
     const imageName = req.params.imageName;
 
     if (!imageName) {
-      res.status(400).send("Image name parameter is missing.");
+      res.status(400).json({ image: "Image name parameter is missing." });
       return false;
     }
+
+    imageCache.delete(imageName);
 
     await bucket.file(imageName).delete();
     return true;
   } catch (err) {
     console.error(err);
-    res.status(500).send("Internal server error");
+    res.status(500).json({ image: "Failed deleting image" });
     return false;
   }
 };

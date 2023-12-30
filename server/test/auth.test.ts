@@ -8,7 +8,7 @@ const expect = chai.expect;
 
 chai.use(chaiHttp);
 
-describe("/auth", () => {
+describe("/auth", function () {
   let user1 = chai.request.agent(app);
 
   describe("/signup", () => {

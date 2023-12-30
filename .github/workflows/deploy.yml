@@ -76,8 +76,9 @@ jobs:
 
             docker stop recipe-app-client || true
             docker rm recipe-app-client || true
-            docker run -d --name recipe-app-client -p 3000:3000 ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/client:latest
+            docker run -d --name recipe-app-client --restart unless-stopped -p 3000:3000 ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/client:latest
+
 
             docker stop recipe-app-server || true
             docker rm recipe-app-server || true
-            docker run -d --name recipe-app-server -p 3001:3000 ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/server:latest
+            docker run -d --name recipe-app-server --restart unless-stopped -p 3001:3000 ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/recipe-app/server:latest
