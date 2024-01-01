@@ -20,6 +20,7 @@ function App() {
                 <Route path="create" element={<CreateRecipe />} />
                 <Route path=":recipeId" element={<RecipeDetails />} />
                 <Route path=":recipeId/edit" element={<EditRecipe />} />
+                <Route path="/auth" element={<Authentication />} />
               </Route>
             </Route>
             <Route path="/auth" element={<Authentication />} />
