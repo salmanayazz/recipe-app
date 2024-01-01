@@ -5,7 +5,6 @@ import CreateRecipe from "./pages/CreateRecipe";
 import RecipeDetails from "./pages/RecipeDetails";
 import EditRecipe from "./pages/EditRecipe";
 import Authentication from "./pages/Authentication";
-import Navbar from "./components/Navbar";
 import { RecipesProvider } from "./contexts/recipes/RecipesProvider";
 import AuthProvider from "./contexts/auth/AuthProvider";
 
@@ -15,13 +14,11 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<Navbar />}>
-              <Route path="/" element={<RecipeList />}>
-                <Route path="create" element={<CreateRecipe />} />
-                <Route path=":recipeId" element={<RecipeDetails />} />
-                <Route path=":recipeId/edit" element={<EditRecipe />} />
-                <Route path="/auth" element={<Authentication />} />
-              </Route>
+            <Route path="/" element={<RecipeList />}>
+              <Route path="create" element={<CreateRecipe />} />
+              <Route path=":recipeId" element={<RecipeDetails />} />
+              <Route path=":recipeId/edit" element={<EditRecipe />} />
+              <Route path="/auth" element={<Authentication />} />
             </Route>
             <Route path="/auth" element={<Authentication />} />
           </Routes>
