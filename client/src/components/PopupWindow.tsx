@@ -35,7 +35,11 @@ export default function PopupWindow({
       // blurred background
       id="popup-window"
       className="fixed inset-0 bg-[#00000080] backdrop-blur-sm"
-      onClick={onExit}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onExit();
+        }
+      }}
     >
       <div
         className={`flex flex-col bg-pri-100 z-10 absolute top-1/2 left-1/2 transform
