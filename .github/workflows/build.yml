@@ -14,18 +14,9 @@ jobs:
 
       - name: Add Environment Variables
         run: |
-          echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> server/.env
-          echo "GCP_SA_KEY=${{ secrets.GCP_SA_KEY }}" >> server/.env
-          echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> server/.env
-          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> server/.env
-          echo "CLIENT_URL=${{ secrets.CLIENT_URL }}" >> server/.env
-          echo "GCS_BUCKET_NAME=${{ secrets.GCS_BUCKET_NAME }}" >> server/.env
-          echo '${{ secrets.GCP_SA_KEY }}' > server/gcp-service-account.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=./gcp-service-account.json" >> server/.env
-
           echo "VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}" >> client/.env
 
-      - name: Build Containers
+      - name: Build Container
         run: |
           cd client
           docker build -t client:latest .
@@ -48,7 +39,7 @@ jobs:
           echo '${{ secrets.GCP_SA_KEY }}' > server/gcp-service-account.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=./gcp-service-account.json" >> server/.env
 
-      - name: Build Containers
+      - name: Build Container
         run: |
           cd server
           docker build -t server:latest .

@@ -25,7 +25,9 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
       ) : (
         /* creates space to keep card height consistent */
         <div className="flex justify-center items-center w-full h-40">
-          {recipeState.fetchingImages && <LoadingAnimation />}
+          {recipeState.fetchingImages && recipe.imageName && (
+            <LoadingAnimation />
+          )}
         </div>
       )}
 

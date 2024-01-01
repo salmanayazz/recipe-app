@@ -6,6 +6,7 @@ import Header1 from "../components/headers/Header1";
 import TextInput from "../components/TextInput";
 import HorizontalLine from "../components/HorizontalLine";
 import Button from "../components/buttons/Button";
+import PopupWindow from "../components/PopupWindow";
 
 export default function Authentication() {
   const { authState, signupUser, loginUser } = useAuth();
@@ -40,13 +41,17 @@ export default function Authentication() {
   };
 
   return (
-    <div className="bg-pri-100 min-h-screen flex flex-col items-center justify-center">
-      <div className="flex flex-col bg-pri-200 p-6 rounded-md shadow-lg w-full max-w-md ">
-        <Header1 text={isSignUp ? "Sign Up" : "Log In"} />
-        <HorizontalLine />
-
-        <form onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-3 py-2">
+    <PopupWindow
+      element={
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-1 flex-col gap-7 md:p-3"
+        >
+          <div className="flex flex-col gap-1">
+            <Header1 text={isSignUp ? "Sign Up" : "Log In"} />
+            <HorizontalLine />
+          </div>
+          <div className="flex flex-col gap-3">
             <TextInput
               label="Username"
               required={true}
@@ -71,7 +76,7 @@ export default function Authentication() {
             />
           </div>
 
-          <div className="flex py-3 flex-col">
+          <div className="flex flex-col gap-2">
             <Button
               type="submit"
               element={isSignUp ? "Sign Up" : "Log In"}
@@ -81,20 +86,20 @@ export default function Authentication() {
                 setAuthError(undefined);
               }}
             />
+
+            <span
+              className="text-blue-500 hover:underline cursor-pointer"
+              onClick={toggleForm}
+            >
+              {isSignUp
+                ? "Already have an account? Log In"
+                : "Don't have an account? Sign Up"}
+            </span>
           </div>
         </form>
-
-        <div className="flex items-center">
-          <span
-            className="text-blue-500 hover:underline cursor-pointer"
-            onClick={toggleForm}
-          >
-            {isSignUp
-              ? "Already have an account? Log In"
-              : "Don't have an account? Sign Up"}
-          </span>
-        </div>
-      </div>
-    </div>
+      }
+      onExit={() => navigate("/")}
+      size="small"
+    />
   );
 }

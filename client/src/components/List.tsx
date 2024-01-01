@@ -10,7 +10,11 @@ export default function List({ values, isOrdered = false }: ListProps) {
     return values
       ? values.map((value: string | JSX.Element, index: number) => (
           <li key={index} className="flex gap-2 w-full ml-2 text-sec-200">
-            <div className="flex justify-center items-center">
+            <div
+              className={`flex justify-center ${
+                typeof value === "string" ? "items-start" : "items-center"
+              }`}
+            >
               {isOrdered ? `${index + 1}.` : "●"}
             </div>
             {typeof value === "string" ? (

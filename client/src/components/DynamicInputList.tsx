@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 
 import uniqid from "uniqid";
 
@@ -46,9 +46,6 @@ export default function DynamicInputList({
   orderedList = false,
   error,
 }: DynamicInputListProps) {
-  // array of JSX elements that then gets passed to list component to be rendered
-  const [inputs, setInputs] = useState<JSX.Element[]>([]);
-
   /**
    * increases input count when user hits the enter key
    * @param e - keyboard event
@@ -63,55 +60,32 @@ export default function DynamicInputList({
     [increaseCount]
   );
 
-  /**
-   * regenerates inputs and puts them into a array to then pass to the List component
-   * @returns - JSX array for containing the inputs
-   */
-  const generateInputArray = useCallback(() => {
-    const newInputs: JSX.Element[] = [];
-
-    // Generate the JSX elements based on the parameters
-    for (let i = 0; i < textValues.length; i++) {
-      const newInput = (
-        <div className="flex w-full justify-center items-center">
-          <TextInput
-            onChange={(value) => onChange(i, value)}
-            textValue={textValues[i].value}
-            // autofocus if last input but not first
-            autoFocus={i === textValues.length - 1 && i !== 0}
-            onKeyDown={listenForEnterKey}
-            errorOutline={error ? true : false}
-          />
-
-          <div
-            // if theres only one input, do not show the remove button
-            // set first button invisible to keep all inputs aligned
-            className={`flex justify-center items-center ${
-              textValues.length === 1 && i === 0 ? "invisible" : ""
-            }`}
-          >
-            <CloseButton onClick={() => removeAt(i)} />
-          </div>
-        </div>
-      );
-
-      newInputs.push(newInput);
-    }
-
-    return newInputs;
-  }, [error, listenForEnterKey, onChange, removeAt, textValues]);
-
-  /**
-   * regenerate array when textValues updates
-   */
-  useEffect(() => {
-    const newInputs = generateInputArray();
-    setInputs(newInputs);
-  }, [textValues, onChange, removeAt, listenForEnterKey, generateInputArray]);
-
   return (
     <div>
-      <List values={inputs} isOrdered={orderedList} />
+      <List
+        values={textValues.map((value, index) => (
+          <div className="flex w-full justify-center items-center" key={index}>
+            <TextInput
+              onChange={(value) => onChange(index, value)}
+              textValue={value.value}
+              // autofocus if last input but not first
+              autoFocus={index === textValues.length - 1 && index !== 0}
+              onKeyDown={listenForEnterKey}
+              errorOutline={error ? true : false}
+            />
+            <div
+              // if theres only one input, do not show the remove button
+              // set first button invisible to keep all inputs aligned
+              className={`flex justify-center items-center ${
+                textValues.length === 1 && index === 0 ? "invisible" : ""
+              }`}
+            >
+              <CloseButton onClick={() => removeAt(index)} />
+            </div>
+          </div>
+        ))}
+        isOrdered={orderedList}
+      />
       <AddButton
         onClick={() => {
           increaseCount();
